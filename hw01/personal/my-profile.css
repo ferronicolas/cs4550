@@ -1,0 +1,11 @@
+#profile-img{
+    width: 16rem;
+}
+
+body {
+    background-image: url("background.jpeg");
+}
+
+h1, p, div {
+    text-align: center;
+}
