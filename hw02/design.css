@@ -1,0 +1,7 @@
+.inner-list li{
+	list-style-type: circle
+}
+
+.outer-list{
+	margin: 1em 0;
+}
