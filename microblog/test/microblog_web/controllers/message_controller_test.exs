@@ -1,14 +1,14 @@
 defmodule MicroblogWeb.MessageControllerTest do
   use MicroblogWeb.ConnCase
 
-  alias Microblog.SocialMedia
+  alias Microblog.Posts
 
-  @create_attrs %{date: ~D[2010-04-17], message: "some message", userId: 42}
-  @update_attrs %{date: ~D[2011-05-18], message: "some updated message", userId: 43}
-  @invalid_attrs %{date: nil, message: nil, userId: nil}
+  @create_attrs %{date: ~D[2010-04-17], message: "some message"}
+  @update_attrs %{date: ~D[2011-05-18], message: "some updated message"}
+  @invalid_attrs %{date: nil, message: nil}
 
   def fixture(:message) do
-    {:ok, message} = SocialMedia.create_message(@create_attrs)
+    {:ok, message} = Posts.create_message(@create_attrs)
     message
   end
 

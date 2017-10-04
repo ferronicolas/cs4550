@@ -12,11 +12,6 @@
     <%= @message.date %>
   </li>
 
-  <li>
-    <strong>Userid:</strong>
-    <%= @message.userId %>
-  </li>
-
 </ul>
 
 <span><%= link "Edit", to: message_path(@conn, :edit, @message) %></span>
