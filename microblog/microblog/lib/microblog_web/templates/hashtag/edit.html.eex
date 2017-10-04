@@ -1,0 +1,5 @@
+<h2>Edit Hashtag</h2>
+
+<%= render "form.html", Map.put(assigns, :action, hashtag_path(@conn, :update, @hashtag)) %>
+
+<span><%= link "Back", to: hashtag_path(@conn, :index) %></span>

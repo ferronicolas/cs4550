@@ -1,0 +1,26 @@
+<h2>Listing Keywords</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Keyword</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for keyword <- @keywords do %>
+    <tr>
+      <td><%= keyword.keyword %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: keyword_path(@conn, :show, keyword), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: keyword_path(@conn, :edit, keyword), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: keyword_path(@conn, :delete, keyword), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Keyword", to: keyword_path(@conn, :new) %></span>

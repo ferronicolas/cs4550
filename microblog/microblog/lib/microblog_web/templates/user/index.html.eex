@@ -1,0 +1,65 @@
+<div class="container my-5">
+
+	<div class="row text-center">
+		<div class="col text-center">
+			<h1 class="text-white">Who to follow</h1>
+		</div>
+	</div>
+
+	<div class="row mt-2">
+		<div class="col text-center">
+			<h4 class="text-center">You might be interested in following some of the following people:</h4>
+		</div>
+	</div>
+
+	<div class="row mt-2">
+
+		<div class="row">
+
+			<%= for user <- @users do %>
+				<div class="col-sm-6 col-lg-3 col-md-4 mt-4 text-center">
+					<div class="card col-offset-1">
+						<div class="card-body">
+							<img class="card-img-top mt-3" src="<%= static_path(@conn, "/images/profile-picture.png") %>" alt="Profile picture">
+							<h6 class="card-title text-success mt-3"><%= user.username %></h6>
+							<h6 class="card-title text-success mt-3"><%= user.email %></h6>
+							<a href="#" class="btn btn-success">Follow</a>
+						</div>
+					</div>
+				</div>
+			<% end %>
+		</div>
+	</div>
+
+</div>
+
+<!--
+
+<h2>Listing Users</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Username</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for user <- @users do %>
+    <tr>
+      <td><%= user.email %></td>
+      <td><%= user.username %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: user_path(@conn, :show, user), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: user_path(@conn, :edit, user), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New User", to: user_path(@conn, :new) %></span> -->

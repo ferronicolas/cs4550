@@ -1,0 +1,98 @@
+<div class="container-fluid text-center pt-4 pb-3 bg-success">
+
+	<div class="row bg-success pt-2">
+		<div class="col">
+			<h3 class="text-light">This is <%= @user.username %>'s profile</h3>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col text-center pb-4 pt-3">
+			<img src="<%= static_path(@conn, "/images/profile-picture.png")  %>" alt="Profile picture">
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-4 col-md-3 col-sm-3 col-1"></div>
+		<div class="col-lg-1 col-md-2 col-sm-2 col-3">
+			<div class="text-dark">
+				Messages
+			</div>
+			<div class="text-dark">
+				2,350
+			</div>
+		</div>
+		<div class="col-lg-2 col-md-2 col-sm-2 col-4">
+			<div class="text-dark">
+				Followers
+			</div>
+			<div class="text-dark">
+				10,230
+			</div>
+		</div>
+		<div class="col-lg-1 col-md-2 col-sm-2 col-3">
+			<div class="text-dark">
+				Following
+			</div>
+			<div class="text-dark">
+				9,820
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-3 col-sm-3 col-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col text-center pb-1 pt-3">
+			<%= if @current_user.id != @user.id do %>
+				<%= button "Follow", to: follow_path(@conn, :follow, %{"follow": %{"user_following_id": @current_user.id, "user_being_followed_id": @user.id, "user_following": @current_user.id, "user_being_followed": @user.id}})  %>
+			<%= end %>
+		</div>
+	</div>
+
+</div>
+<div class="bg-dark pt-3 pb-5">
+	<div class="row">
+		<div class="col-lg-3 col-md-2 col-sm-2"></div>
+		<div class="card col-lg-6 col-md-8 col-sm-8 mt-2">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-lg-2"></div>
+					<h2 class="col-lg-7 text-center"></h2>
+					<h6 class="card-title col-lg-3 text-center text-dark">12:01 08/17/2017</h6>
+				</div>
+				<p class="card-text mt-2 text-dark">"Hurricane Maria's brute force doubled in strength as it barreled toward Caribbean islands already devastated by Hurricane Irma. On Monday afternoon, Maria was hurling winds of 125 mph (200 kilometers per hour) as it closed in on the Caribbean and took aim at Puerto Rico. That's nearly twice the hurricane's..." via CNN (http://www.cnn.com/2017/09/18/americas/atlantic-storms-maria-jose-lee/index.html)</p>
+				<div class="row">
+					<div class="col-lg-9 col-md-8 col-sm-8 col-8"></div>
+					<a href="#" class="text-success col-lg-3 col-md-4 col-sm-4 col-4 mt-2 text-center">REPLY</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-2 col-sm-2"></div>
+
+	</div>
+</div>
+
+
+<!--
+
+<h2>Show User</h2>
+
+<ul>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @user.email %>
+  </li>
+
+  <li>
+    <strong>Username:</strong>
+    <%= @user.username %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
+<span><%= link "Back", to: user_path(@conn, :index) %></span>
+
+
+-->

@@ -1,0 +1,8 @@
+<h2>Show Mention</h2>
+
+<ul>
+
+</ul>
+
+<span><%= link "Edit", to: mention_path(@conn, :edit, @mention) %></span>
+<span><%= link "Back", to: mention_path(@conn, :index) %></span>
