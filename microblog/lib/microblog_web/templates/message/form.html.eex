@@ -23,11 +23,11 @@
 							<h4 for="message" class="text-success">Write a message</h4>
 							<!-- <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter a message here..."></textarea>
 							<%= label f, "Write a message", class: "text-success control-label" %> -->
-							<%= textarea f, :message, class: "form-control" %>
+							<%= textarea f, :message, class: "form-control", id: "message_textarea" %>
 							<%= error_tag f, :message %>
 
 							<%= hidden_input f, :user_id, value: @current_user.id, class: "form-control" %>
-
+							<%= hidden_input f, :username, value: @current_user.username, class: "form-control", id: "username_field" %>
 						</div>
 						<div class="row">
 							<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>
@@ -35,7 +35,7 @@
 								<button class="btn btn-success col-lg-8 col-md-12 col-sm-12 col-12">CANCEL</button>
 							</div>
 							<div class="col-sm-5 col-lg-4 col-md-4 col-5 text-center">
-								<button type="submit" type="submit" class="btn btn-success col-lg-8 col-md-12 col-sm-12 col-12">POST</button>
+								<button id="post_button" type="submit" type="submit" class="btn btn-success col-lg-8 col-md-12 col-sm-12 col-12">POST</button>
 							</div>
 							<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>
 						</div>

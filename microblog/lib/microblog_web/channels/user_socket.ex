@@ -2,7 +2,8 @@ defmodule MicroblogWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", MicroblogWeb.RoomChannel
+  #channel "room:*", MicroblogWeb.RoomChannel # When a client sends a message with topic room:something, it will be routed to RoomChannel
+  channel "updates:lobby", MicroblogWeb.UpdatesChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

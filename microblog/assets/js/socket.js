@@ -54,9 +54,49 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
+let channel = socket.channel("updates:lobby", {})
+
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
+
+channel.on("new_message", payload => {
+	// Elements in feed
+	let container = document.getElementById("row_container")
+	let row = document.getElementById("new_message_row")
+	
+	let padding = document.getElementById("padding")
+	let paddingCopy = padding.cloneNode(true)
+	let rowCopy = row.cloneNode(true)
+	let paddingCopy2 = padding.cloneNode(true)
+	
+	container.prepend(paddingCopy)
+	container.prepend(rowCopy)
+	container.prepend(paddingCopy2)
+	//container.insertBefore(rowCopy, container.firstChild)
+	//container.insertBefore(padding, container.firstChild)
+	
+	// Get elements
+	let usernameField = document.getElementById("username")
+	let messageField = document.getElementById("message")
+	let dateField = document.getElementById("date")
+
+	usernameField.innerText = payload.username
+	messageField.innerText = payload.message
+	dateField.innerText = payload.date
+})
+
+let postButton = document.getElementById("post_button")
+let message = document.getElementById("message_textarea")
+let user_field = document.getElementById("username_field")
+var d = new Date()
+
+if (postButton){
+	postButton.addEventListener("click", event => {
+		//console.log(d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate())
+		channel.push("new_message", {message: message.value, username: user_field.value, date: d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()})
+	})
+}
+
 
 export default socket
