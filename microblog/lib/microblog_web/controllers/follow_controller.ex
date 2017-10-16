@@ -9,7 +9,7 @@ defmodule MicroblogWeb.FollowController do
 		{:ok, follow} ->
 			conn
         	|> put_flash(:info, "Followed user " <> Accounts.get_user!(follow_params["user_being_followed_id"]).username)
-       	 	|> redirect(to: user_path(conn, :show, follow_params["user_following_id"]))
+       	 	|> redirect(to: user_path(conn, :show, follow_params["user_being_followed_id"]))
     	{:error, %Ecto.Changeset{} = changeset} ->
         	render(conn, "new.html", changeset: changeset)
     end
