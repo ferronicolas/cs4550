@@ -58,6 +58,11 @@
 						<% end %>
 					</li>
                     <li class="nav-item">
+						<%= if @current_user do %>
+							<a class="nav-link" href="<%= message_path(@conn, :index) %>">Feed</a>					 
+						<% end %>
+					</li>
+                    <li class="nav-item">
 						<a class="nav-link" href="<%= user_path(@conn, :index) %>">Who to follow</a>		 
                     </li>
                 </ul>

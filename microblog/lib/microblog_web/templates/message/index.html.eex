@@ -1,4 +1,61 @@
-<h2>Listing Messages</h2>
+<div class="container my-5">
+
+	<div class="row text-center">
+		<div class="col text-center">
+			<h1 class="text-light">Feed</h1>
+		</div>
+	</div>
+
+	<% posts=Microblog.Posts.get_my_friends_posts(@current_user.id) %>
+	
+	<%= if length(posts) != 0 do %>
+		<div class="row mt-4">
+			<div class="col text-center">
+				<h4 class="text-center">Check out what your friends have posted:</h4>
+			</div>
+		</div>
+	<% end %>
+
+	<div class="row text-center">
+
+		<%= if length(posts) == 0 do %>
+			<div class="col-lg-4 col-sm-4 col-md-4 col-4"></div>
+			<div class="mt-5 text-center">
+				<div>
+					<h4 class="text-center">Your friends don't have posts yet.</h4>
+				</div>
+			</div>
+		<% else %>
+			<div class="row">
+				<%= for message <- posts do %>
+					<div class="col-sm-1 col-md-1 col-lg-1 col-1"></div>
+					<div class="col-sm-10 col-lg-10 col-md-10 col-10 mt-4">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-lg-2"></div>
+									<h2 class="col-lg-8 mt-2 text-center"><%= Microblog.Accounts.get_user!(message.user_id).username %></h2>
+									<h6 class="card-title col-lg-2 text-center mt-3"><%= message.date %></h6>
+								</div>
+								<p class="card-text mt-2"><%= message.message %></p>
+								<div class="row">
+									<div class="col-lg-3 col-md-3 col-sm-3 col-3"></div>
+									<a href="#" class="btn btn-success col-lg-6 col-md-6 col-sm-6 col-6 mt-2">LIKE</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-1 col-md-1 col-lg-1 col-1"></div>
+
+				<% end %>
+			</div>
+		<% end %>
+	</div>
+
+</div>
+
+
+<!-- <h2>Listing Messages</h2>
 
 <table class="table">
   <thead>
@@ -25,4 +82,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Message", to: message_path(@conn, :new) %></span>
+<span><%= link "New Message", to: message_path(@conn, :new) %></span> -->

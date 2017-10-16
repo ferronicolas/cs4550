@@ -44,6 +44,15 @@ defmodule Microblog.Posts do
 	Repo.all(query)
 	end
 
+
+  def get_my_friends_posts(user_id) do
+	query1 = from p in Microblog.Accounts.Follow, where: p.user_following_id == ^user_id
+	result = Repo.all(query1)
+	result = Enum.map(result, fn x -> x.user_being_followed_id end)
+	query = from m in Message, where: m.user_id in ^result, order_by: [desc: m.inserted_at]
+    Repo.all(query)
+  end
+
   @doc """
   Creates a message.
 
