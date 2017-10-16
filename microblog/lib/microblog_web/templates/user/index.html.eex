@@ -17,16 +17,31 @@
 		<div class="row">
 
 			<%= for user <- @users do %>
-				<div class="col-sm-6 col-lg-3 col-md-4 mt-4 text-center">
-					<div class="card col-offset-1">
-						<div class="card-body">
-							<img class="card-img-top mt-3" src="<%= static_path(@conn, "/images/profile-picture.png") %>" alt="Profile picture">
-							<h6 class="card-title text-success mt-3"><%= user.username %></h6>
-							<h6 class="card-title text-success mt-3"><%= user.email %></h6>
-							<a href="#" class="btn btn-success">Follow</a>
+				<%= if !@current_user or @current_user.id != user.id do %>
+						<div class="col-sm-6 col-lg-3 col-md-4 mt-4 text-center">
+							<div class="card col-offset-1">
+								<div class="card-body">
+									<img class="card-img-top mt-3" src="<%= static_path(@conn, "/images/profile-picture.png") %>" alt="Profile picture">
+									<h6 class="card-title text-success mt-3"><%= user.username %></h6>
+									<h6 class="card-title text-success mt-3"><%= user.email %></h6>
+									<!-- <a href="#" class="btn btn-success">Follow</a> -->
+									<%= if ((@current_user != nil) and length(Microblog.Accounts.am_i_following(@current_user.id, user.id)) == 0) do %>
+											<%= form_for @conn, follow_path(@conn, :follow), [as: "follow"], fn f -> %>
+												<div class="form-group">
+													<%= hidden_input f, :user_following_id, value: @current_user.id, class: "form-control" %>
+													<%= hidden_input f, :user_being_followed_id, value: user.id, class: "form-control" %>
+												</div>
+												<button type="submit" type="submit" class="btn btn-success">Follow</button>
+											<% end %>
+									<% else %>
+											<%= if ((@current_user != nil) and length(Microblog.Accounts.am_i_following(@current_user.id, user.id)) != 0) do %>
+												<button class="btn btn-light text-dark mt-2">Following</button>
+											<% end %>
+									<% end %>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
+				<% end %>
 			<% end %>
 		</div>
 	</div>
