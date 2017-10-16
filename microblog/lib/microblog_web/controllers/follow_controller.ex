@@ -5,14 +5,13 @@ defmodule MicroblogWeb.FollowController do
   alias Microblog.Accounts.Follow
 
   def follow(conn, %{"follow" => follow_params}) do
-	IO.puts("LLEGA ACA CARAJO")
-	case Accounts.follow(follow_params.user_following_id, follow_params.user_being_followed_id) do
-	{:ok, follow} ->
-		conn
-        |> put_flash(:info, "Follow created successfully.")
-        |> redirect(to: user_path(conn, :show, follow_params.user_following_id))
-    {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+	case Accounts.follow(follow_params["user_following_id"], follow_params["user_being_followed_id"]) do
+		{:ok, follow} ->
+			conn
+        	|> put_flash(:info, "Followed user " <> Accounts.get_user!(follow_params["user_being_followed_id"]).username)
+       	 	|> redirect(to: user_path(conn, :show, follow_params["user_following_id"]))
+    	{:error, %Ecto.Changeset{} = changeset} ->
+        	render(conn, "new.html", changeset: changeset)
     end
   end
 

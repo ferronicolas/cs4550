@@ -3,7 +3,6 @@ defmodule Microblog.Accounts.Follow do
   import Ecto.Changeset
   alias Microblog.Accounts.Follow
 
-
   schema "follows" do
     belongs_to :user_following, Microblog.Accounts.User
     belongs_to :user_being_followed, Microblog.Accounts.User

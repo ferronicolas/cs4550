@@ -109,6 +109,12 @@ defmodule Microblog.Accounts do
 
   alias Microblog.Accounts.Follow
 
+  def am_i_following(my_id, user_id) do
+    query = from p in Follow, where: p.user_following_id == ^my_id and p.user_being_followed_id == ^user_id
+    Repo.all(query)
+    IO.inspect(Repo.all(query))
+  end
+
   @doc """
   Returns the list of follows.
 
@@ -139,9 +145,9 @@ defmodule Microblog.Accounts do
   def get_follow!(id), do: Repo.get!(Follow, id)
 
   def follow(user_following_id, user_being_followed_id) do
-	IO.puts("LLEGA")
-	IO.puts(user_following_id)
-	Repo.insert!(%Follow{"user_following": Integer.parse(user_following_id), "user_being_followed": Integer.parse(user_being_followed_id)})
+	%Follow{"user_following_id": elem(Integer.parse(user_following_id),0), "user_being_followed_id": elem(Integer.parse(user_being_followed_id),0)}
+	|> Follow.changeset(%{})
+	|> Repo.insert()
   end
 
   @doc """

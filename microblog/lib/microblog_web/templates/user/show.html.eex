@@ -44,13 +44,17 @@
 	<div class="row">
 		<div class="col text-center pb-1 pt-3">
 			<%= if @current_user.id != @user.id do %>
-				<%= form_for @conn, follow_path(@conn, :follow), [as: "follow"], fn f -> %>
-        	        <div class="form-group">
-    	                <%= hidden_input f, :user_following, value: @current_user.id, class: "form-control" %>
-                        <%= hidden_input f, :user_being_followed, value: @user.id, class: "form-control" %>
-                    </div>
-					<button type="submit" type="submit">Follow</button>					
-                <% end %>
+				<%= if length(Microblog.Accounts.am_i_following(@current_user.id, @user.id)) > 0 do %>
+						<h5 class="text-white">Following</h5>
+				<%= else %>
+						<%= form_for @conn, follow_path(@conn, :follow), [as: "follow"], fn f -> %>
+							<div class="form-group">
+								<%= hidden_input f, :user_following_id, value: @current_user.id, class: "form-control" %>
+								<%= hidden_input f, :user_being_followed_id, value: @user.id, class: "form-control" %>
+							</div>
+							<button type="submit" type="submit">Follow</button>					
+                		<%= end %>
+				<%= end %>
 			<%= else %>		
 				<%= button "New Message", to: message_path(@conn, :new) %>
 			<%= end %>
