@@ -1,7 +1,7 @@
 defmodule MicroblogWeb.UpdatesChannel do
   use MicroblogWeb, :channel
 
-  def join("updates:lobby", payload, socket) do
+  def join("updates:all", payload, socket) do
     if authorized?(payload) do
       {:ok, socket}
     else

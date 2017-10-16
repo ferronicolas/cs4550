@@ -3,7 +3,7 @@ defmodule MicroblogWeb.UserSocket do
 
   ## Channels
   #channel "room:*", MicroblogWeb.RoomChannel # When a client sends a message with topic room:something, it will be routed to RoomChannel
-  channel "updates:lobby", MicroblogWeb.UpdatesChannel
+  channel "updates:all", MicroblogWeb.UpdatesChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
