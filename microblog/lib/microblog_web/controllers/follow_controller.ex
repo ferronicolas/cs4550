@@ -4,12 +4,13 @@ defmodule MicroblogWeb.FollowController do
   alias Microblog.Accounts
   alias Microblog.Accounts.Follow
 
-  def follow(conn, %{"follow" => %{"user_following_id" => user_following_id, "user_being_followed_id" => user_being_followed_id}}) do
-	case Accounts.follow(user_following_id, user_being_followed_id) do
+  def follow(conn, %{"follow" => follow_params}) do
+	IO.puts("LLEGA ACA CARAJO")
+	case Accounts.follow(follow_params.user_following_id, follow_params.user_being_followed_id) do
 	{:ok, follow} ->
 		conn
         |> put_flash(:info, "Follow created successfully.")
-        |> redirect(to: user_path(conn, :show, follow))
+        |> redirect(to: user_path(conn, :show, follow_params.user_following_id))
     {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -27,11 +28,11 @@ defmodule MicroblogWeb.FollowController do
   end
 
   def create(conn, %{"follow" => follow_params}) do
-    case Accounts.create_follow(follow_params) do
+	case Accounts.create_follow(follow_params) do
       {:ok, follow} ->
         conn
         |> put_flash(:info, "Follow created successfully.")
-        |> redirect(to: follow_path(conn, :show, follow))
+        |> redirect(to: user_path(conn, :show, follow_params.user_following_id))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

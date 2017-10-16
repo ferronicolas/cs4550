@@ -39,8 +39,10 @@ defmodule Microblog.Posts do
 
 
   def get_messages_by_user_id(user_id) do
-	Repo.get_by(Message, user_id: user_id)
-  end
+	# Repo.all_by!(Message, user_id: user_id)
+  	query = from p in Message, where: p.user_id == ^user_id, order_by: [desc: p.inserted_at]
+	Repo.all(query)
+	end
 
   @doc """
   Creates a message.
@@ -55,7 +57,10 @@ defmodule Microblog.Posts do
 
   """
   def create_message(attrs \\ %{}) do
-    %Message{}
+    message = %Message{}
+	today = Ecto.Date.utc()
+	message = Map.put(message, :date, today)
+	message
     |> Message.changeset(attrs)
     |> Repo.insert()
   end

@@ -5,8 +5,8 @@ defmodule Microblog.Accounts.Follow do
 
 
   schema "follows" do
-    field :user_following, :id
-    field :user_being_followed, :id
+    belongs_to :user_following, Microblog.Accounts.User
+    belongs_to :user_being_followed, Microblog.Accounts.User
 
     timestamps()
   end

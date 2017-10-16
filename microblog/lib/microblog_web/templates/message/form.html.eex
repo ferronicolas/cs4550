@@ -13,10 +13,21 @@
 		<div class="col-sm-10 col-lg-8 col-md-8 col-10 mt-4">
 			<div class="card">
 				<div class="card-body">
-					<%= form_for @conn, message_path(@conn, :new), [as: "message"], fn f -> %>
-						<div class="form-group text-center">
+					<%= form_for @conn, message_path(@conn, :create), [as: "message"], fn f -> %>
+						<%= if @changeset.action do %>
+    						<div class="alert alert-danger">
+   								<p>Oops, something went wrong!</p>
+						    </div>
+						<% end %>
+						<div class="form-group">
 							<h4 for="message" class="text-success">Write a message</h4>
-							<textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter a message here..."></textarea>
+							<!-- <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter a message here..."></textarea>
+							<%= label f, "Write a message", class: "text-success control-label" %> -->
+							<%= textarea f, :message, class: "form-control" %>
+							<%= error_tag f, :message %>
+
+							<%= hidden_input f, :user_id, value: @current_user.id, class: "form-control" %>
+
 						</div>
 						<div class="row">
 							<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>

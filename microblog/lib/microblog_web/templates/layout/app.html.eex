@@ -31,11 +31,11 @@
     	<meta charset="utf-8">
     	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<title>Create user</title>
+		<title>Social media app</title>
     	<!-- Bootstrap CSS -->
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">   	
 		<!-- <link rel="stylesheet" href="users-new.css"> -->
-		<link rel="stylesheet" href="<%= static_path(@conn, "/css/users-new.css") %>" >
+		<!-- <link rel="stylesheet" href="<%= static_path(@conn, "/css/users-new.css") %>" > -->
 
  	</head>
   	<body class="bg-success">
@@ -51,10 +51,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
+						<%= if @current_user do %>
+							<a class="nav-link" href="<%= user_path(@conn, :show, @current_user) %>">Home</a>					 
+                   		<% else %>
+							<a class="nav-link" href="#">Home</a>
+						<% end %>
+					</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Who to follow</a>
+						<a class="nav-link" href="<%= user_path(@conn, :index) %>">Who to follow</a>		 
                     </li>
                 </ul>
 

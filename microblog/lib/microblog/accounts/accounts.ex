@@ -139,8 +139,8 @@ defmodule Microblog.Accounts do
   def get_follow!(id), do: Repo.get!(Follow, id)
 
   def follow(user_following_id, user_being_followed_id) do
-	IO.puts "HOLA" <> user_following_id
-	IO.puts "HOLA" <> user_being_followed_id
+	IO.puts("LLEGA")
+	IO.puts(user_following_id)
 	Repo.insert!(%Follow{"user_following": Integer.parse(user_following_id), "user_being_followed": Integer.parse(user_being_followed_id)})
   end
 
@@ -157,7 +157,8 @@ defmodule Microblog.Accounts do
 
   """
   def create_follow(attrs \\ %{}) do
-    %Follow{}
+   	IO.inspect(%Follow{})
+	%Follow{}
     |> Follow.changeset(attrs)
     |> Repo.insert()
   end
