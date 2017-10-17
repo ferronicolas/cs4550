@@ -1,0 +1,5 @@
+<h2>Edit Keyword</h2>
+
+<%= render "form.html", Map.put(assigns, :action, keyword_path(@conn, :update, @keyword)) %>
+
+<span><%= link "Back", to: keyword_path(@conn, :index) %></span>

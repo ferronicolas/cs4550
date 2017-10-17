@@ -1,0 +1,8 @@
+<h2>Show Hashtag</h2>
+
+<ul>
+
+</ul>
+
+<span><%= link "Edit", to: hashtag_path(@conn, :edit, @hashtag) %></span>
+<span><%= link "Back", to: hashtag_path(@conn, :index) %></span>
