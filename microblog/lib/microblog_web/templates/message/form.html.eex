@@ -11,8 +11,10 @@
 		<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>
 
 		<div class="col-sm-10 col-lg-8 col-md-8 col-10 mt-4">
-			<div class="card">
-				<div class="card-body">
+			<%= if @current_user do %>
+				<div class="card">
+					<div class="card-body">
+
 					<%= form_for @conn, message_path(@conn, :create), [as: "message"], fn f -> %>
 						<%= if @changeset.action do %>
     						<div class="alert alert-danger">
@@ -40,8 +42,15 @@
 							<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>
 						</div>
 					<% end %>
-			  </div>
-			</div>
+				  </div>
+				</div>
+	
+			<% else %>
+
+				<p class="text-center">You can't post messages when you are not logged on</p>
+	
+			<% end %>
+		
 		</div>
 
 		<div class="col-sm-1 col-lg-2 col-md-2 col-1"></div>

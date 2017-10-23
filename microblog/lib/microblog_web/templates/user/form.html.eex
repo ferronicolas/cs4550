@@ -1,3 +1,47 @@
+<div class="container">
+
+	<div class="mt-5"></div>
+
+	
+	<div class="row mt-3">
+	
+		<div class="col-lg-3 col-md-2 col-sm-2 col-2"></div>
+
+		<div class="col-lg-6 col-md-8 col-sm-8 col-8" id="user-form">
+	
+			<%= form_for @changeset, @action, fn f -> %>
+				<%= if @changeset.action do %>
+					<div class="alert alert-danger">
+						<p>Oops, something went wrong! Please check the errors below.</p>
+					</div>
+				<% end %>
+				<div class="form-group">
+					<label for="email" class="text-light">Email address</label>
+                    <input class="form-control mr-sm-3" type="text" placeholder="Enter email address" aria-label="Email" name="email">
+					<%= error_tag f, :email %>
+				</div>
+				<div class="form-group">
+					<label for="username" class="text-light">Username</label>
+                    <input class="form-control mr-sm-3" type="text" placeholder="Enter username" aria-label="Username" name="username">
+					<%= error_tag f, :username %>
+				</div>
+				<div class="form-group">
+					<label for="password" class="text-light">Password</label>
+					<input type="password" class="form-control" id="password" placeholder="Enter password">
+				</div>
+				<div class="text-center">
+					<button id="create-button" type="submit" class="btn btn-success">CREATE USER</button>
+				</div>
+			<% end %>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+<!--
 <%= form_for @changeset, @action, fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
@@ -20,4 +64,4 @@
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
-<% end %>
+<% end %> -->

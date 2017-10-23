@@ -29,7 +29,7 @@ defmodule MicroblogWeb.Router do
 	post "/follows/follow", FollowController, :follow
 	post "/messages/new", MessageController, :new
 
-    get "/", PageController, :index
+    get "/", UserController, :new
   end
 
   # Other scopes may use custom stacks.
