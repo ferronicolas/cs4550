@@ -55,7 +55,10 @@ defmodule Microblog.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{}
+  	IO.puts("KE")
+	IO.inspect(attrs)
+	IO.puts("ACA")
+	%User{}
     |> User.changeset(attrs)
     |> Repo.insert()
   end

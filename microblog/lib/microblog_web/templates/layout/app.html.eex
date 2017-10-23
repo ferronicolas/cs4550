@@ -76,7 +76,8 @@
 					<% else %>
 					<%= form_for @conn, session_path(@conn, :login), [as: "user", class: "form-inline my-2 my-lg-0"], fn f -> %>
                     	<input class="form-control mr-sm-3" type="text" placeholder="Enter your email" aria-label="Email" name="email">
-                    	<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+                    	<input class="form-control mr-sm-3" type="password" placeholder="Enter your password" name="password">
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
 					<% end %>
 				<% end %>
 <!--

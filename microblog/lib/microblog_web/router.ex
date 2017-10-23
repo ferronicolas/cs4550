@@ -20,14 +20,15 @@ defmodule MicroblogWeb.Router do
 
 	resources "/messages", MessageController
 	resources "/users", UserController
-	resources "/follows", FollowController
-	resources "/mentions", MentionController
-	resources "/keywords", KeywordController
-	resources "/hashtags", HashtagController
+	resources "/follows", FollowController, except: [:index, :new]
+	resources "/mentions", MentionController, except: [:index, :new]
+	resources "/keywords", KeywordController, except: [:index, :new]
+	resources "/hashtags", HashtagController, except: [:index, :new]
 	post "/sessions", SessionController, :login
 	delete "/sessions", SessionController, :logout
 	post "/follows/follow", FollowController, :follow
 	post "/messages/new", MessageController, :new
+	get "/error", ErrorController, :index	
 
     get "/", UserController, :new
   end

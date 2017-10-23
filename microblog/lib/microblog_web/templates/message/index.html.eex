@@ -6,6 +6,11 @@
 		</div>
 	</div>
 
+	<div class="row text-center">
+		<div class="col-lg-5 col-md-5 col-sm-5 col-5"></div>
+		<%= button "New Message", to: message_path(@conn, :new), class: "text-center col-lg-2 col-md-2 col-sm-2 col-2 mt-4" %>
+	</div>
+
 	<% posts=Microblog.Posts.get_my_friends_posts(@current_user.id) %>
 	
 	<%= if length(posts) != 0 do %>
@@ -19,8 +24,8 @@
 	<div class="row text-center">
 
 		<%= if length(posts) == 0 do %>
-			<div class="col-lg-4 col-sm-4 col-md-4 col-4"></div>
-			<div class="mt-5 text-center">
+			<div class="col-lg-3 col-sm-3 col-md-3 col-3"></div>
+			<div class="mt-5 col-lg-6 col-sm-6 col-md-6 col-6 text-center">
 				<div>
 					<h4 class="text-center">Your friends don't have posts yet.</h4>
 				</div>

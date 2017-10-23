@@ -16,12 +16,26 @@ defmodule MicroblogWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    case Accounts.create_user(user_params) do
+	case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
         |> redirect(to: user_path(conn, :show, user))
       {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
+  end
+
+  def create(conn, %{"email" => email, "username" => username, "password" => password, "confirm_password" => confirm_password}) do
+	user_params = %{"email" => email, "username" => username, "password" => password, "confirm_password" => confirm_password}
+	case Accounts.create_user(user_params) do
+      {:ok, user} ->
+        conn
+		|> put_flash(:info, "User created successfully.")
+        |> put_session(:user_id, user.id)
+		|> redirect(to: user_path(conn, :show, user))
+        #|> redirect(to: "/")
+	  {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
   end

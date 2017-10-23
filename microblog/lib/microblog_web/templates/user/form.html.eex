@@ -9,10 +9,10 @@
 
 		<div class="col-lg-6 col-md-8 col-sm-8 col-8" id="user-form">
 	
-			<%= form_for @changeset, @action, fn f -> %>
+			<%= form_for @conn, user_path(@conn, :create), [as: "user"],fn f -> %>
 				<%= if @changeset.action do %>
 					<div class="alert alert-danger">
-						<p>Oops, something went wrong! Please check the errors below.</p>
+						<p>Oops, something went wrong!</p>
 					</div>
 				<% end %>
 				<div class="form-group">
@@ -27,7 +27,11 @@
 				</div>
 				<div class="form-group">
 					<label for="password" class="text-light">Password</label>
-					<input type="password" class="form-control" id="password" placeholder="Enter password">
+					<input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+				</div>
+				<div class="form-group">
+					<label for="confirm_password" class="text-light">Confirm password</label>
+					<input type="password" class="form-control" id="confirm_password" placeholder="Enter password again" name="confirm_password">
 				</div>
 				<div class="text-center">
 					<button id="create-button" type="submit" class="btn btn-success">CREATE USER</button>
@@ -42,6 +46,7 @@
 
 
 <!--
+
 <%= form_for @changeset, @action, fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
