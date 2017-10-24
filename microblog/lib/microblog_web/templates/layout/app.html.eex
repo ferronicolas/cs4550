@@ -65,6 +65,12 @@
                     <li class="nav-item">
 						<a class="nav-link" href="<%= user_path(@conn, :index) %>">Who to follow</a>		 
                     </li>
+					<li class="nav-item">
+						<%= form_for @conn, message_path(@conn, :search), [as: "message", class: "form-inline my-2 my-lg-0"], fn f -> %>
+        	                <input class="form-control mr-sm-3" type="text" placeholder="Enter a keyword" name="keyword">
+    	                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+	                    <% end %>
+					</li>
                 </ul>
 
 

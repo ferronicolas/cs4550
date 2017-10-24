@@ -29,6 +29,7 @@ defmodule MicroblogWeb.Router do
 	post "/follows/follow", FollowController, :follow
 	post "/messages/new", MessageController, :new
 	get "/error", ErrorController, :index	
+	post "/messages/search", MessageController, :search
 
     get "/", UserController, :new
   end

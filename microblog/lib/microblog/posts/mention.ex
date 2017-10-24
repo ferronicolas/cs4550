@@ -5,10 +5,10 @@ defmodule Microblog.Posts.Mention do
 
 
   schema "mentions" do
-    field :message, :id
-    field :user_id, :id
-
-    timestamps()
+	belongs_to :message, Microblog.Posts.Message
+    belongs_to :user_id, Microblog.Accounts.User
+    
+	timestamps()
   end
 
   @doc false

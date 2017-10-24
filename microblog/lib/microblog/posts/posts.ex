@@ -42,8 +42,22 @@ defmodule Microblog.Posts do
 	# Repo.all_by!(Message, user_id: user_id)
   	query = from p in Message, where: p.user_id == ^user_id, order_by: [desc: p.inserted_at]
 	Repo.all(query)
-	end
+  end
 
+  def get_messages_by_hashtag(keyword) do
+	query1 = from p in Microblog.Posts.Keyword, where: p.keyword == ^keyword
+	result = Repo.all(query1)
+	IO.puts("HERE!!!")
+	IO.inspect(result)
+	result = Enum.map(result, fn x -> x.id end)
+	query2 = from p in Microblog.Posts.Hashtag, where: p.keyword_id in ^result
+	result2 = Repo.all(query2)	
+	IO.puts("HERE!!!")
+	IO.inspect(result2)
+	result2 = Enum.map(result2, fn x -> x.message_id end)
+	query = from m in Message, where: m.id in ^result2, order_by: [desc: m.inserted_at]
+    Repo.all(query)
+  end
 
   def get_my_friends_posts(user_id) do
 	query1 = from p in Microblog.Accounts.Follow, where: p.user_following_id == ^user_id
@@ -69,6 +83,8 @@ defmodule Microblog.Posts do
     message = %Message{}
 	today = Ecto.Date.utc()
 	message = Map.put(message, :date, today)
+	IO.puts("ACA")
+	IO.inspect(message)
 	message
     |> Message.changeset(attrs)
     |> Repo.insert()
@@ -248,6 +264,12 @@ defmodule Microblog.Posts do
   """
   def get_keyword!(id), do: Repo.get!(Keyword, id)
 
+  def get_keyword_by_string(string) do
+	query = from p in Keyword, where: p.keyword == ^string
+	Repo.all(query)
+	end
+
+
   @doc """
   Creates a keyword.
 
@@ -357,9 +379,14 @@ defmodule Microblog.Posts do
 
   """
   def create_hashtag(attrs \\ %{}) do
-    %Hashtag{}
+	%Hashtag{}
     |> Hashtag.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_hashtag_mio(hashtag) do
+    hashtag
+	|> Repo.insert()
   end
 
   @doc """

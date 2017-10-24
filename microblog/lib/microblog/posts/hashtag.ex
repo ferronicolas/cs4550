@@ -5,8 +5,11 @@ defmodule Microblog.Posts.Hashtag do
 
 
   schema "hashtags" do
-    field :message, :id
-    field :keyword, :id
+#    belongs_to :message_id, Microblog.Posts.Message
+#    belongs_to :keyword_id, Microblog.Posts.Keyword
+	field :message_id, :integer
+	field :keyword_id, :integer
+	
 
     timestamps()
   end
