@@ -1,0 +1,40 @@
+/* This file is for your main application css. */
+th, td {
+	border: 1px solid black;
+}
+
+th {
+	width: 30px;
+	height: 30px;
+}
+
+h5 {
+	text-align: center;
+}
+
+.firstGrid {
+	padding-left: 20px;
+    float: left; /* add this */
+}
+
+.secondGrid {
+	padding-right: 20px;
+	float: right;
+    overflow: hidden;
+}
+
+.ship_5 {
+	background-color: blue;
+}
+
+.cross {
+   width: 30px;
+   height: 30px;
+   background: linear-gradient(to bottom, transparent 35%, #d00 35%, #d00 65%, transparent 65%);
+}
+
+.failed {
+   width: 30px;
+   height: 30px;
+   background: linear-gradient(to bottom, transparent 35%, #4168e8 35%, #4168e8 65%, transparent 65%);
+}
