@@ -1,0 +1,89 @@
+<div class="container my-5">
+
+	<div class="row text-center">
+		<div class="col text-center">
+			<h1 class="text-light">Feed</h1>
+		</div>
+	</div>
+
+	<div class="row text-center">
+		<div class="col-lg-5 col-md-5 col-sm-5 col-5"></div>
+		<%= button "New Message", to: message_path(@conn, :new), class: "text-center col-lg-2 col-md-2 col-sm-2 col-2 mt-4" %>
+	</div>
+
+	<% posts=Microblog.Posts.get_my_friends_posts(@current_user.id) %>
+	
+	<%= if length(posts) != 0 do %>
+		<div class="row mt-4">
+			<div class="col text-center">
+				<h4 class="text-center">Check out what your friends have posted:</h4>
+			</div>
+		</div>
+	<% end %>
+
+	<div class="row text-center">
+
+		<%= if length(posts) == 0 do %>
+			<div class="col-lg-3 col-sm-3 col-md-3 col-3"></div>
+			<div class="mt-5 col-lg-6 col-sm-6 col-md-6 col-6 text-center">
+				<div>
+					<h4 class="text-center">Your friends don't have posts yet.</h4>
+				</div>
+			</div>
+		<% else %>
+			<div class="row" id="row_container">
+				<%= for message <- posts do %>
+					<div class="col-sm-1 col-md-1 col-lg-1 col-1"></div>
+					<div class="col-sm-10 col-lg-10 col-md-10 col-10 mt-4" id="new_message_row">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-lg-2"></div>
+									<h2 id="username" class="col-lg-8 mt-2 text-center"><%= Microblog.Accounts.get_user!(message.user_id).username %></h2>
+									<h6 id="date" class="card-title col-lg-2 text-center mt-3"><%= message.date %></h6>
+								</div>
+								<p id="message" class="card-text mt-2"><%= message.message %></p>
+								<div class="row">
+									<div class="col-lg-3 col-md-3 col-sm-3 col-3"></div>
+									<a href="#" class="btn btn-success col-lg-6 col-md-6 col-sm-6 col-6 mt-2">LIKE</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-1 col-md-1 col-lg-1 col-1" id="padding"></div>
+				<% end %>
+			</div>
+		<% end %>
+	</div>
+
+</div>
+
+
+<!-- <h2>Listing Messages</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Message</th>
+      <th>Date</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for message <- @messages do %>
+    <tr>
+      <td><%= message.message %></td>
+      <td><%= message.date %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: message_path(@conn, :show, message), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: message_path(@conn, :edit, message), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: message_path(@conn, :delete, message), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Message", to: message_path(@conn, :new) %></span> -->

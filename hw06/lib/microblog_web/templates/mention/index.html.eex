@@ -1,0 +1,24 @@
+<h2>Listing Mentions</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for mention <- @mentions do %>
+    <tr>
+
+      <td class="text-right">
+        <span><%= link "Show", to: mention_path(@conn, :show, mention), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: mention_path(@conn, :edit, mention), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: mention_path(@conn, :delete, mention), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Mention", to: mention_path(@conn, :new) %></span>

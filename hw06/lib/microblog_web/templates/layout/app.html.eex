@@ -1,0 +1,120 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hello Microblog!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <nav role="navigation">
+          <ul class="nav nav-pills pull-right">
+            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
+          </ul>
+        </nav>
+        <span class="logo"></span>
+      </header>
+-->
+
+<!-- CUSTOMIZED CODE -- >
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    	<!-- Required meta tags -->
+    	<meta charset="utf-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<title>Social media app</title>
+    	<!-- Bootstrap CSS -->
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">   	
+		<!-- <link rel="stylesheet" href="users-new.css"> -->
+		<!-- <link rel="stylesheet" href="<%= static_path(@conn, "/css/users-new.css") %>" > -->
+
+ 	</head>
+  	<body class="bg-success">
+	
+	    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">MY SOCIAL MEDIA</a>
+
+            <!-- In order for it to collapse when the screen is small (show overflow icon) -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+						<%= if @current_user do %>
+							<a class="nav-link" href="<%= user_path(@conn, :show, @current_user) %>">Home</a>					 
+                   		<% else %>
+							<a class="nav-link" href="#">Home</a>
+						<% end %>
+					</li>
+                    <li class="nav-item">
+						<%= if @current_user do %>
+							<a class="nav-link" href="<%= message_path(@conn, :index) %>">Feed</a>					 
+						<% end %>
+					</li>
+                    <li class="nav-item">
+						<a class="nav-link" href="<%= user_path(@conn, :index) %>">Who to follow</a>		 
+                    </li>
+                </ul>
+
+
+				<%= if @current_user do %>
+					<span class="text-white">
+						  <%= @current_user.email %> |
+						  <%= link("Logout", to: session_path(@conn, :logout), method: :delete) %>
+					</span>
+					<% else %>
+					<%= form_for @conn, session_path(@conn, :login), [as: "user", class: "form-inline my-2 my-lg-0"], fn f -> %>
+                    	<input class="form-control mr-sm-3" type="text" placeholder="Enter your email" aria-label="Email" name="email">
+                    	<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+					<% end %>
+				<% end %>
+<!--
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-3" type="text" placeholder="Enter your email" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+                </form>
+ -->
+           </div>
+        </nav>
+
+		<div class="container">
+	   
+			<%= if get_flash(@conn, :info) do %>
+				<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+			<% end %>
+			<%= if get_flash(@conn, :error) do %>
+				<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+			<% end %>
+
+			<main role="main">
+				<%= render @view_module, @view_template, assigns %>
+			</main>
+
+
+		</div>
+
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    	<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  	
+	</body>
+</html>
+
+<!--
+    </div>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html> -->

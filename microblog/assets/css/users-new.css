@@ -1,0 +1,8 @@
+#user-form {
+    margin: 0 auto;
+	float: none;
+}
+
+#create-button{
+	cursor:pointer;
+}
