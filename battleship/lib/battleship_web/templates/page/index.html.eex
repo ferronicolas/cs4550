@@ -1,10 +1,24 @@
-<div>
-    <div class="cross"></div>
-    <h6>Shot got to ship</h6>
-    <div class="failed"></div>
-    <h6>Failed shot</h6>
+ <div style="text-align: center;">
+    <button id: "create_button" class="btn btn-default">Create room</button>
+    <button id: "join_button" class="btn btn-default">Join room</button>
 </div>
+
+<div style="text-align: center;">
+    <h6>Your join code is: <h6 id="joinCode"></h6></h6>
+</div>
+
 <div id='react-container'></div>
+
+<div class="divBelow">
+    <div class="leftDiv">
+        <div class="cross"></div>
+        <h6>Shot got to ship</h6>
+    </div>
+    <div class="rightDiv">
+        <div class="failed"></div>
+        <h6>Failed shot</h6>
+    </div>
+</div>
 
 <script type="text/babel">
 
@@ -581,7 +595,7 @@
         },
 
         render(){
-            return <table>
+            return <div><table>
                 <tbody>
                     <tr>
                         <th onClick={() => this.onSquareClicked(0)} style={{backgroundColor:this.state.bg_color_0}} className={this.state.hit0}></th>
@@ -705,19 +719,24 @@
                     </tr>
                 </tbody>
             </table>
+            { (this.state.state_ship_5 == 0) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You must position the 5-block-ship</div> : 
+            (this.state.state_ship_5 == 1) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You are positioning the 5-block-ship</div> : 
+            (this.state.state_ship_4 == 0) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You must position the 4-block-ship</div> : 
+            (this.state.state_ship_4 == 1) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You are positioning the 4-block-ship</div> : 
+            (this.state.state_ship_3_1 == 0) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You must position one of the 3-block-ships</div> : 
+            (this.state.state_ship_3_1 == 1) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You are positioning one of the 3-block-ships</div> : 
+            (this.state.state_ship_3_2 == 0) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You must position the second 3-block-ship</div> : 
+            (this.state.state_ship_3_2 == 1) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You are positioning the second 3-block-ship</div> : 
+            (this.state.state_ship_2 == 0) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You must position the 2-block-ship</div> : 
+            (this.state.state_ship_2 == 1) && (this.props.my_grid == "true") ? <div className="messageMyGrid">You are positioning the 2-block-ship</div> : 
+            (this.props.my_grid == "true") ? <div className="messageMyGrid">You have positioned all of the ships!</div> : null }
+            </div>
         },
 
     })
 
-    var MyComponent = React.createClass({
-        render(){
-            return <div>
-                <h1>Hello {this.props.name}!</h1>
-                <p>Anotha one</p>
-                <p>{this.props.children}</p>
-            </div>
-        }
-    }) 
+
+
 
     // Two arguments: 1) what we want to create
     //                2) where we want to put it

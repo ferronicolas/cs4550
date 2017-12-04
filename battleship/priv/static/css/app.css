@@ -23,6 +23,21 @@ h5 {
     overflow: hidden;
 }
 
+.leftDiv {
+	padding-left: 20px;
+    float: left; /* add this */
+}
+
+.rightDiv {
+	padding-left: 40px;
+	float: left;
+    overflow: hidden;
+}
+
+.divBelow {
+	clear: both;
+}
+
 .ship_5 {
 	background-color: blue;
 }
@@ -37,6 +52,10 @@ h5 {
    width: 30px;
    height: 30px;
    background: linear-gradient(to bottom, transparent 35%, #4168e8 35%, #4168e8 65%, transparent 65%);
+}
+
+.messageMyGrid{
+	text-align: center;
 }
 
 /* Includes Bootstrap as well as some default style for the starter
