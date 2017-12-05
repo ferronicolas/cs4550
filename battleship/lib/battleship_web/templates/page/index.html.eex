@@ -1,26 +1,17 @@
- <div style="text-align: center;">
+ <!-- <div style="text-align: center;">
     <button id: "create_button" class="btn btn-default">Create room</button>
     <button id: "join_button" class="btn btn-default">Join room</button>
 </div>
 
 <div style="text-align: center;">
     <h6>Your join code is: <h6 id="joinCode"></h6></h6>
-</div>
+</div> -->
 
 <div id='react-container'></div>
 
-<div class="divBelow">
-    <div class="leftDiv">
-        <div class="cross"></div>
-        <h6>Shot got to ship</h6>
-    </div>
-    <div class="rightDiv">
-        <div class="failed"></div>
-        <h6>Failed shot</h6>
-    </div>
-</div>
-
 <script type="text/babel">
+
+<%#  /*   var ships_placed = false;
 
     var Grid = React.createClass({
 
@@ -59,6 +50,7 @@
                             this.setState({ship3_2_position: 'horizontal'});
                         }else if (length_of_ship == 2){
                             this.setState({state_ship_2: 2, ships_already_placed: true});
+                            ships_placed = true;
                         }
                     }else if ((square_id + 10 == ship[0]) ||
                               (square_id - 10 == ship[0]) ){
@@ -74,6 +66,7 @@
                             this.setState({ship3_2_position: 'vertical'});
                         }else if (length_of_ship == 2){
                             this.setState({state_ship_2: 2, ships_already_placed: true});
+                            ships_placed = true;
                         }
                     }else{
                         console.log("Invalid block!");
@@ -247,28 +240,29 @@
                 var length_of_ship = this.state.ship_2.length;
                 this.logicShip(square_id, length_of_ship, 2, this.state.ship_2, colors[4], 0);
             }else{
-                alert("You've already selected all ships!");
+                alert("You've already positioned all the ships!");
             }
         },
 
         attack(square_id) {
-            this.setState({hit0: 'cross'});
-            this.setState({hit2: 'failed'});
-            this.setState({hit6: 'cross'});
-
-            this.setState({hit11: 'cross'});
-            this.setState({hit12: 'cross'});
-            this.setState({hit13: 'failed'});
-            this.setState({hit15: 'failed'});
-            this.setState({hit16: 'cross'});
-            this.setState({hit17: 'failed'});
-
-            this.setState({hit20: 'cross'});
-            this.setState({hit21: 'cross'});
-            this.setState({hit22: 'cross'});
-            this.setState({hit27: 'failed'});
-            this.setState({hit28: 'failed'});
-            this.setState({hit29: 'failed'});
+            switch (square_id){
+                case 0:
+                    if (this.notInShip5(square_id) && this.notInShip4(square_id) && this.notInShip3_1(square_id) &&
+                        this.notInShip3_2(square_id) && this.notInShip2(square_id)){
+                        this.setState({hit_0: 'failed'});
+                    }else{
+                        this.setState({hit_0: 'cross'});
+                    }
+                    break;
+                case 1:
+                    if (this.notInShip5(square_id) && this.notInShip4(square_id) && this.notInShip3_1(square_id) &&
+                        this.notInShip3_2(square_id) && this.notInShip2(square_id)){
+                        this.setState({hit_1: 'failed'});
+                    }else{
+                        this.setState({hit_1: 'cross'});
+                    }
+                    break;
+            }
         },        
 
         onSquareClicked(square_id) {
@@ -276,7 +270,11 @@
             if (my_grid == "true"){
                 this.paint(square_id); 
             }else{
-                this.attack(square_id);
+                if (!ships_placed){
+                    alert("You must position your ships before attacking");
+                }else{
+                    this.attack(square_id);
+                }
             }
         },
 
@@ -598,40 +596,40 @@
             return <div><table>
                 <tbody>
                     <tr>
-                        <th onClick={() => this.onSquareClicked(0)} style={{backgroundColor:this.state.bg_color_0}} className={this.state.hit0}></th>
-                        <th onClick={() => this.onSquareClicked(1)} style={{backgroundColor:this.state.bg_color_1}} className={this.state.hit1}></th>
-                        <th onClick={() => this.onSquareClicked(2)} style={{backgroundColor:this.state.bg_color_2}} className={this.state.hit2}></th>
-                        <th onClick={() => this.onSquareClicked(3)} style={{backgroundColor:this.state.bg_color_3}} className={this.state.hit3}></th>
-                        <th onClick={() => this.onSquareClicked(4)} style={{backgroundColor:this.state.bg_color_4}} className={this.state.hit4}></th>
-                        <th onClick={() => this.onSquareClicked(5)} style={{backgroundColor:this.state.bg_color_5}} className={this.state.hit5}></th>
-                        <th onClick={() => this.onSquareClicked(6)} style={{backgroundColor:this.state.bg_color_6}} className={this.state.hit6}></th>
-                        <th onClick={() => this.onSquareClicked(7)} style={{backgroundColor:this.state.bg_color_7}} className={this.state.hit7}></th>
-                        <th onClick={() => this.onSquareClicked(8)} style={{backgroundColor:this.state.bg_color_8}} className={this.state.hit8}></th>
-                        <th onClick={() => this.onSquareClicked(9)} style={{backgroundColor:this.state.bg_color_9}} className={this.state.hit9}></th>
+                        <th onClick={() => this.onSquareClicked(0)} style={{backgroundColor:this.state.bg_color_0}} className={this.state.hit_0}></th>
+                        <th onClick={() => this.onSquareClicked(1)} style={{backgroundColor:this.state.bg_color_1}} className={this.state.hit_1}></th>
+                        <th onClick={() => this.onSquareClicked(2)} style={{backgroundColor:this.state.bg_color_2}} className={this.state.hit_2}></th>
+                        <th onClick={() => this.onSquareClicked(3)} style={{backgroundColor:this.state.bg_color_3}} className={this.state.hit_3}></th>
+                        <th onClick={() => this.onSquareClicked(4)} style={{backgroundColor:this.state.bg_color_4}} className={this.state.hit_4}></th>
+                        <th onClick={() => this.onSquareClicked(5)} style={{backgroundColor:this.state.bg_color_5}} className={this.state.hit_5}></th>
+                        <th onClick={() => this.onSquareClicked(6)} style={{backgroundColor:this.state.bg_color_6}} className={this.state.hit_6}></th>
+                        <th onClick={() => this.onSquareClicked(7)} style={{backgroundColor:this.state.bg_color_7}} className={this.state.hit_7}></th>
+                        <th onClick={() => this.onSquareClicked(8)} style={{backgroundColor:this.state.bg_color_8}} className={this.state.hit_8}></th>
+                        <th onClick={() => this.onSquareClicked(9)} style={{backgroundColor:this.state.bg_color_9}} className={this.state.hit_9}></th>
                     </tr>
                     <tr>
-                        <th onClick={() => this.onSquareClicked(10)} style={{backgroundColor:this.state.bg_color_10}} className={this.state.hit10}></th>
-                        <th onClick={() => this.onSquareClicked(11)} style={{backgroundColor:this.state.bg_color_11}} className={this.state.hit11}></th>
-                        <th onClick={() => this.onSquareClicked(12)} style={{backgroundColor:this.state.bg_color_12}} className={this.state.hit12}></th>
-                        <th onClick={() => this.onSquareClicked(13)} style={{backgroundColor:this.state.bg_color_13}} className={this.state.hit13}></th>
-                        <th onClick={() => this.onSquareClicked(14)} style={{backgroundColor:this.state.bg_color_14}} className={this.state.hit14}></th>
-                        <th onClick={() => this.onSquareClicked(15)} style={{backgroundColor:this.state.bg_color_15}} className={this.state.hit15}></th>
-                        <th onClick={() => this.onSquareClicked(16)} style={{backgroundColor:this.state.bg_color_16}} className={this.state.hit16}></th>
-                        <th onClick={() => this.onSquareClicked(17)} style={{backgroundColor:this.state.bg_color_17}} className={this.state.hit17}></th>
-                        <th onClick={() => this.onSquareClicked(18)} style={{backgroundColor:this.state.bg_color_18}} className={this.state.hit18}></th>
-                        <th onClick={() => this.onSquareClicked(19)} style={{backgroundColor:this.state.bg_color_19}} className={this.state.hit19}></th>
+                        <th onClick={() => this.onSquareClicked(10)} style={{backgroundColor:this.state.bg_color_10}} className={this.state.hit_10}></th>
+                        <th onClick={() => this.onSquareClicked(11)} style={{backgroundColor:this.state.bg_color_11}} className={this.state.hit_11}></th>
+                        <th onClick={() => this.onSquareClicked(12)} style={{backgroundColor:this.state.bg_color_12}} className={this.state.hit_12}></th>
+                        <th onClick={() => this.onSquareClicked(13)} style={{backgroundColor:this.state.bg_color_13}} className={this.state.hit_13}></th>
+                        <th onClick={() => this.onSquareClicked(14)} style={{backgroundColor:this.state.bg_color_14}} className={this.state.hit_14}></th>
+                        <th onClick={() => this.onSquareClicked(15)} style={{backgroundColor:this.state.bg_color_15}} className={this.state.hit_15}></th>
+                        <th onClick={() => this.onSquareClicked(16)} style={{backgroundColor:this.state.bg_color_16}} className={this.state.hit_16}></th>
+                        <th onClick={() => this.onSquareClicked(17)} style={{backgroundColor:this.state.bg_color_17}} className={this.state.hit_17}></th>
+                        <th onClick={() => this.onSquareClicked(18)} style={{backgroundColor:this.state.bg_color_18}} className={this.state.hit_18}></th>
+                        <th onClick={() => this.onSquareClicked(19)} style={{backgroundColor:this.state.bg_color_19}} className={this.state.hit_19}></th>
                     </tr> 
                     <tr>
-                        <th onClick={() => this.onSquareClicked(20)} style={{backgroundColor:this.state.bg_color_20}} className={this.state.hit20}></th>
-                        <th onClick={() => this.onSquareClicked(21)} style={{backgroundColor:this.state.bg_color_21}} className={this.state.hit21}></th>
-                        <th onClick={() => this.onSquareClicked(22)} style={{backgroundColor:this.state.bg_color_22}} className={this.state.hit22}></th>
-                        <th onClick={() => this.onSquareClicked(23)} style={{backgroundColor:this.state.bg_color_23}} className={this.state.hit23}></th>
-                        <th onClick={() => this.onSquareClicked(24)} style={{backgroundColor:this.state.bg_color_24}} className={this.state.hit24}></th>
-                        <th onClick={() => this.onSquareClicked(25)} style={{backgroundColor:this.state.bg_color_25}} className={this.state.hit25}></th>
-                        <th onClick={() => this.onSquareClicked(26)} style={{backgroundColor:this.state.bg_color_26}} className={this.state.hit26}></th>
-                        <th onClick={() => this.onSquareClicked(27)} style={{backgroundColor:this.state.bg_color_27}} className={this.state.hit27}></th>
-                        <th onClick={() => this.onSquareClicked(28)} style={{backgroundColor:this.state.bg_color_28}} className={this.state.hit28}></th>
-                        <th onClick={() => this.onSquareClicked(29)} style={{backgroundColor:this.state.bg_color_29}} className={this.state.hit29}></th>
+                        <th onClick={() => this.onSquareClicked(20)} style={{backgroundColor:this.state.bg_color_20}} className={this.state.hit_20}></th>
+                        <th onClick={() => this.onSquareClicked(21)} style={{backgroundColor:this.state.bg_color_21}} className={this.state.hit_21}></th>
+                        <th onClick={() => this.onSquareClicked(22)} style={{backgroundColor:this.state.bg_color_22}} className={this.state.hit_22}></th>
+                        <th onClick={() => this.onSquareClicked(23)} style={{backgroundColor:this.state.bg_color_23}} className={this.state.hit_23}></th>
+                        <th onClick={() => this.onSquareClicked(24)} style={{backgroundColor:this.state.bg_color_24}} className={this.state.hit_24}></th>
+                        <th onClick={() => this.onSquareClicked(25)} style={{backgroundColor:this.state.bg_color_25}} className={this.state.hit_25}></th>
+                        <th onClick={() => this.onSquareClicked(26)} style={{backgroundColor:this.state.bg_color_26}} className={this.state.hit_26}></th>
+                        <th onClick={() => this.onSquareClicked(27)} style={{backgroundColor:this.state.bg_color_27}} className={this.state.hit_27}></th>
+                        <th onClick={() => this.onSquareClicked(28)} style={{backgroundColor:this.state.bg_color_28}} className={this.state.hit_28}></th>
+                        <th onClick={() => this.onSquareClicked(29)} style={{backgroundColor:this.state.bg_color_29}} className={this.state.hit_29}></th>
                     </tr>
                     <tr>
                         <th onClick={() => this.onSquareClicked(30)} style={{backgroundColor:this.state.bg_color_30}}></th>
@@ -733,24 +731,6 @@
             </div>
         },
 
-    })
-
-
-
-
-    // Two arguments: 1) what we want to create
-    //                2) where we want to put it
-    ReactDOM.render(
-            <div>
-                <div className="firstGrid">
-                    <h5>Your ocean area</h5>
-                    <Grid id="my_grid" my_grid="true" />
-                </div>
-                <div className="secondGrid">
-                    <h5>Your opponent's ocean area</h5>
-                    <Grid id="opponents_grid" my_grid="false" />
-                </div>
-            </div>
-            , document.getElementById("react-container"))
+    })*/ %>
 
 </script>

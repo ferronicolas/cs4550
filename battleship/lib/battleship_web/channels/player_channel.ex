@@ -1,7 +1,7 @@
 defmodule BattleshipWeb.PlayerChannel do
   use BattleshipWeb, :channel
 
-  def join("player:lobby", payload, socket) do
+  def join("game:" <> game, payload, socket) do
     if authorized?(payload) do
       {:ok, socket}
     else
@@ -11,14 +11,14 @@ defmodule BattleshipWeb.PlayerChannel do
 
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
+  # def handle_in("attack", payload, socket) do
+  #   {:reply, {:ok, payload}, socket}
+  # end
 
   # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (player:lobby).
-  def handle_in("shout", payload, socket) do
-    broadcast socket, "shout", payload
+  # broadcast to everyone in the current topic (player:*).
+  def handle_in("attack", payload, socket) do
+    broadcast socket, "attack", payload
     {:noreply, socket}
   end
 
