@@ -21,10 +21,12 @@ defmodule BattleshipWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", BattleshipWeb do
-  #   pipe_through :api
-  #   get "/"
-  # end
+  scope "/api", BattleshipWeb do
+    pipe_through :api
+    
+    get "/randomNumber", PageController, :get_rand
+    post "/randomNumber/:rand", PageController, :join_rand
+  end
 
   # Gotten from class notes
   def set_user(conn, _params) do

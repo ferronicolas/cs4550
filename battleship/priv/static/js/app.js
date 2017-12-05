@@ -37945,7 +37945,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-function ready(channel, state) {
+var random_number = Math.random() * 20; // Brunch automatically concatenates all files in your
+// watched paths. Those paths can be configured at
+// config.paths.watched in "brunch-config.js".
+//
+// However, those files will only be executed if
+// explicitly imported. The only exception are files
+// in vendor, which are never wrapped in imports and
+// therefore are always executed.
+
+// Import dependencies
+//
+// If you no longer want to use a dependency, remember
+// to also remove its path from "config.paths.watched".
+
+
+function ready(channel, game) {
 	// Two arguments: 1) what we want to create
 	//                2) where we want to put it
 	_reactDom2.default.render(_react2.default.createElement(
@@ -37959,7 +37974,7 @@ function ready(channel, state) {
 				null,
 				'Your ocean area'
 			),
-			_react2.default.createElement(_game2.default, { id: 'my_grid', my_grid: 'true', channel: channel })
+			_react2.default.createElement(_game2.default, { id: 'my_grid', my_grid: 'true', channel: channel, game: game, user: random_number })
 		),
 		_react2.default.createElement(
 			'div',
@@ -37969,7 +37984,7 @@ function ready(channel, state) {
 				null,
 				'Your opponent\'s ocean area'
 			),
-			_react2.default.createElement(_game2.default, { id: 'opponents_grid', my_grid: 'false', channel: channel })
+			_react2.default.createElement(_game2.default, { id: 'opponents_grid', my_grid: 'false', channel: channel, game: game, user: random_number })
 		),
 		_react2.default.createElement(
 			'div',
@@ -37996,38 +38011,85 @@ function ready(channel, state) {
 			)
 		)
 	), document.getElementById("react-container"));
-} // Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
-
-// Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
-
+}
 
 function start() {
-	var channel = _socket2.default.channel("game:123430", {}); //+ window.user_name, {});
-	channel.join().receive("ok", function (state0) {
-		console.log("Joined successfully");
-		ready(channel, state0);
-	}).receive("error", function (resp) {
-		_reactDom2.default.render(_react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(
-				'h3',
-				{ className: 'messageMyGrid' },
-				'Couldn\'t connect to websockets.'
-			)
-		), document.getElementById("react-container"));
-		console.log("Unable to join", resp);
+
+	$("#create_button").click(function () {
+		$.ajax({
+			url: "/api/randomNumber",
+			type: 'GET',
+			success: function success(res) {
+				$("#join_code_text").html(res.random_number);
+				$("#join_div").css({ display: 'none' });
+				$("#create_button").css({ display: 'none' });
+				$("#your_join_code_is").css({ display: 'block' });
+				var channel = _socket2.default.channel("game:" + res.random_number, { "user": random_number }); //+ window.user_name, {});
+				channel.join().receive("ok", function (state0) {
+					console.log("Joined successfully");
+					ready(channel, res.random_number);
+				}).receive("error", function (resp) {
+					_reactDom2.default.render(_react2.default.createElement(
+						'div',
+						null,
+						_react2.default.createElement(
+							'h3',
+							{ className: 'messageMyGrid' },
+							'Couldn\'t connect to websockets.'
+						)
+					), document.getElementById("react-container"));
+					console.log("Unable to join", resp);
+				});
+			},
+			error: function error(xhr, ajaxOptions, thrownError) {
+				console.log("ERROR " + xhr);
+				var responseMessage = JSON.parse(xhr.responseText);
+			}
+		});
 	});
+
+	$("#join_button").click(function () {
+		var value = $("#join_code_input").val();
+		if (value.length > 0) {
+			$.ajax({
+				url: "/api/randomNumber/" + value,
+				type: 'POST',
+				success: function success(res) {
+					if (res.result == "ok") {
+						$("#create_div").css({ display: 'none' });
+						var channel = _socket2.default.channel("game:" + value, { "user": random_number }); //+ window.user_name, {});
+						channel.join().receive("ok", function (state0) {
+							console.log("Joined successfully");
+							ready(channel, value);
+						}).receive("error", function (resp) {
+							_reactDom2.default.render(_react2.default.createElement(
+								'div',
+								null,
+								_react2.default.createElement(
+									'h3',
+									{ className: 'messageMyGrid' },
+									'Couldn\'t connect to websockets.'
+								)
+							), document.getElementById("react-container"));
+							console.log("Unable to join", resp);
+						});
+					}
+				},
+				error: function error(xhr, ajaxOptions, thrownError) {
+					console.log("ERROR " + xhr);
+					var responseMessage = JSON.parse(xhr.responseText);
+				}
+			});
+		} else {
+			alert("You must insert a valid code");
+		}
+	});
+
+	/*	channel.on("get_code", payload =>{
+     	ready(channel);
+     }); */
+
+	//	channel.push("get_code", {});
 }
 
 $(start);
@@ -38035,21 +38097,20 @@ $(start);
 });
 
 require.register("js/game.js", function(exports, require, module) {
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var ships_placed = false;
-var random_number = Math.random() * 20;
 
 var Grid = React.createClass({
-    displayName: 'Grid',
+    displayName: "Grid",
 
 
     getInitialState: function getInitialState() {
 
-        if (this.props.my_grid == "true") {
+        if (this.props.my_grid == "true" || this.props.my_grid == "false") {
             this.set_receive_message();
         }
 
@@ -38068,6 +38129,19 @@ var Grid = React.createClass({
         };
     },
 
+    sendShips: function sendShips() {
+        this.props.channel.push("my_ships", {
+            "game": this.props.game,
+            "user": this.props.user,
+            "ships": {
+                "ship_5": this.state.ship_5,
+                "ship_4": this.state.ship_4,
+                "ship_3_1": this.state.ship_3_1,
+                "ship_3_2": this.state.ship_3_2,
+                "ship_2": this.state.ship_2
+            }
+        });
+    },
     logicShip: function logicShip(square_id, length_of_ship_so_far, length_of_ship, ship, color, id) {
         if (length_of_ship_so_far == 1) {
             if (square_id == ship[0]) {
@@ -38087,6 +38161,7 @@ var Grid = React.createClass({
                     } else if (length_of_ship == 2) {
                         this.setState({ state_ship_2: 2, ships_already_placed: true });
                         ships_placed = true;
+                        this.sendShips();
                     }
                 } else if (square_id + 10 == ship[0] || square_id - 10 == ship[0]) {
                     ship.push(square_id);
@@ -38102,6 +38177,7 @@ var Grid = React.createClass({
                     } else if (length_of_ship == 2) {
                         this.setState({ state_ship_2: 2, ships_already_placed: true });
                         ships_placed = true;
+                        this.sendShips();
                     }
                 } else {
                     console.log("Invalid block!");
@@ -38273,7 +38349,8 @@ var Grid = React.createClass({
         var _this = this;
 
         this.props.channel.on("attack", function (payload) {
-            if (_this.props.my_grid == "true" && payload.user != random_number) {
+            var my_grid = _this.props.my_grid;
+            if (my_grid == "true" && payload.user != _this.props.user) {
                 // Means that the other user sent the message
                 var square_id = payload.square_id;
                 switch (square_id) {
@@ -38987,11 +39064,725 @@ var Grid = React.createClass({
                         }
                         break;
                 }
+            } else if (my_grid == "false" && payload.user == _this.props.user) {
+                var square_id = payload.square_id;
+                var hit_ship = payload.hit_ship;
+                switch (square_id) {
+                    case 0:
+                        if (!hit_ship) {
+                            _this.setState({ hit_0: 'failed' });
+                        } else {
+                            _this.setState({ hit_0: 'cross' });
+                        }
+                        break;
+                    case 1:
+                        if (!hit_ship) {
+                            _this.setState({ hit_1: 'failed' });
+                        } else {
+                            _this.setState({ hit_1: 'cross' });
+                        }
+                        break;
+                    case 2:
+                        if (!hit_ship) {
+                            _this.setState({ hit_2: 'failed' });
+                        } else {
+                            _this.setState({ hit_2: 'cross' });
+                        }
+                        break;
+                    case 3:
+                        if (!hit_ship) {
+                            _this.setState({ hit_3: 'failed' });
+                        } else {
+                            _this.setState({ hit_3: 'cross' });
+                        }
+                        break;
+                    case 4:
+                        if (!hit_ship) {
+                            _this.setState({ hit_4: 'failed' });
+                        } else {
+                            _this.setState({ hit_4: 'cross' });
+                        }
+                        break;
+                    case 5:
+                        if (!hit_ship) {
+                            _this.setState({ hit_5: 'failed' });
+                        } else {
+                            _this.setState({ hit_5: 'cross' });
+                        }
+                        break;
+                    case 6:
+                        if (!hit_ship) {
+                            _this.setState({ hit_6: 'failed' });
+                        } else {
+                            _this.setState({ hit_6: 'cross' });
+                        }
+                        break;
+                    case 7:
+                        if (!hit_ship) {
+                            _this.setState({ hit_7: 'failed' });
+                        } else {
+                            _this.setState({ hit_7: 'cross' });
+                        }
+                        break;
+                    case 8:
+                        if (!hit_ship) {
+                            _this.setState({ hit_8: 'failed' });
+                        } else {
+                            _this.setState({ hit_8: 'cross' });
+                        }
+                        break;
+                    case 9:
+                        if (!hit_ship) {
+                            _this.setState({ hit_9: 'failed' });
+                        } else {
+                            _this.setState({ hit_9: 'cross' });
+                        }
+                        break;
+
+                    case 10:
+                        if (!hit_ship) {
+                            _this.setState({ hit_10: 'failed' });
+                        } else {
+                            _this.setState({ hit_10: 'cross' });
+                        }
+                        break;
+                    case 11:
+                        if (!hit_ship) {
+                            _this.setState({ hit_11: 'failed' });
+                        } else {
+                            _this.setState({ hit_11: 'cross' });
+                        }
+                        break;
+                    case 12:
+                        if (!hit_ship) {
+                            _this.setState({ hit_12: 'failed' });
+                        } else {
+                            _this.setState({ hit_12: 'cross' });
+                        }
+                        break;
+                    case 13:
+                        if (!hit_ship) {
+                            _this.setState({ hit_13: 'failed' });
+                        } else {
+                            _this.setState({ hit_13: 'cross' });
+                        }
+                        break;
+                    case 14:
+                        if (!hit_ship) {
+                            _this.setState({ hit_14: 'failed' });
+                        } else {
+                            _this.setState({ hit_14: 'cross' });
+                        }
+                        break;
+                    case 15:
+                        if (!hit_ship) {
+                            _this.setState({ hit_15: 'failed' });
+                        } else {
+                            _this.setState({ hit_15: 'cross' });
+                        }
+                        break;
+                    case 16:
+                        if (!hit_ship) {
+                            _this.setState({ hit_16: 'failed' });
+                        } else {
+                            _this.setState({ hit_16: 'cross' });
+                        }
+                        break;
+                    case 17:
+                        if (!hit_ship) {
+                            _this.setState({ hit_17: 'failed' });
+                        } else {
+                            _this.setState({ hit_17: 'cross' });
+                        }
+                        break;
+                    case 18:
+                        if (!hit_ship) {
+                            _this.setState({ hit_18: 'failed' });
+                        } else {
+                            _this.setState({ hit_18: 'cross' });
+                        }
+                        break;
+                    case 19:
+                        if (!hit_ship) {
+                            _this.setState({ hit_19: 'failed' });
+                        } else {
+                            _this.setState({ hit_19: 'cross' });
+                        }
+                        break;
+
+                    case 20:
+                        if (!hit_ship) {
+                            _this.setState({ hit_20: 'failed' });
+                        } else {
+                            _this.setState({ hit_20: 'cross' });
+                        }
+                        break;
+                    case 21:
+                        if (!hit_ship) {
+                            _this.setState({ hit_21: 'failed' });
+                        } else {
+                            _this.setState({ hit_21: 'cross' });
+                        }
+                        break;
+                    case 22:
+                        if (!hit_ship) {
+                            _this.setState({ hit_22: 'failed' });
+                        } else {
+                            _this.setState({ hit_22: 'cross' });
+                        }
+                        break;
+                    case 23:
+                        if (!hit_ship) {
+                            _this.setState({ hit_23: 'failed' });
+                        } else {
+                            _this.setState({ hit_23: 'cross' });
+                        }
+                        break;
+                    case 24:
+                        if (!hit_ship) {
+                            _this.setState({ hit_24: 'failed' });
+                        } else {
+                            _this.setState({ hit_24: 'cross' });
+                        }
+                        break;
+                    case 25:
+                        if (!hit_ship) {
+                            _this.setState({ hit_25: 'failed' });
+                        } else {
+                            _this.setState({ hit_25: 'cross' });
+                        }
+                        break;
+                    case 26:
+                        if (!hit_ship) {
+                            _this.setState({ hit_26: 'failed' });
+                        } else {
+                            _this.setState({ hit_26: 'cross' });
+                        }
+                        break;
+                    case 27:
+                        if (!hit_ship) {
+                            _this.setState({ hit_27: 'failed' });
+                        } else {
+                            _this.setState({ hit_27: 'cross' });
+                        }
+                        break;
+                    case 28:
+                        if (!hit_ship) {
+                            _this.setState({ hit_28: 'failed' });
+                        } else {
+                            _this.setState({ hit_28: 'cross' });
+                        }
+                        break;
+                    case 29:
+                        if (!hit_ship) {
+                            _this.setState({ hit_29: 'failed' });
+                        } else {
+                            _this.setState({ hit_29: 'cross' });
+                        }
+                        break;
+
+                    case 30:
+                        if (!hit_ship) {
+                            _this.setState({ hit_30: 'failed' });
+                        } else {
+                            _this.setState({ hit_30: 'cross' });
+                        }
+                        break;
+                    case 31:
+                        if (!hit_ship) {
+                            _this.setState({ hit_31: 'failed' });
+                        } else {
+                            _this.setState({ hit_31: 'cross' });
+                        }
+                        break;
+                    case 32:
+                        if (!hit_ship) {
+                            _this.setState({ hit_32: 'failed' });
+                        } else {
+                            _this.setState({ hit_32: 'cross' });
+                        }
+                        break;
+                    case 33:
+                        if (!hit_ship) {
+                            _this.setState({ hit_33: 'failed' });
+                        } else {
+                            _this.setState({ hit_33: 'cross' });
+                        }
+                        break;
+                    case 34:
+                        if (!hit_ship) {
+                            _this.setState({ hit_34: 'failed' });
+                        } else {
+                            _this.setState({ hit_34: 'cross' });
+                        }
+                        break;
+                    case 35:
+                        if (!hit_ship) {
+                            _this.setState({ hit_35: 'failed' });
+                        } else {
+                            _this.setState({ hit_35: 'cross' });
+                        }
+                        break;
+                    case 36:
+                        if (!hit_ship) {
+                            _this.setState({ hit_36: 'failed' });
+                        } else {
+                            _this.setState({ hit_36: 'cross' });
+                        }
+                        break;
+                    case 37:
+                        if (!hit_ship) {
+                            _this.setState({ hit_37: 'failed' });
+                        } else {
+                            _this.setState({ hit_37: 'cross' });
+                        }
+                        break;
+                    case 38:
+                        if (!hit_ship) {
+                            _this.setState({ hit_38: 'failed' });
+                        } else {
+                            _this.setState({ hit_38: 'cross' });
+                        }
+                        break;
+                    case 39:
+                        if (!hit_ship) {
+                            _this.setState({ hit_39: 'failed' });
+                        } else {
+                            _this.setState({ hit_39: 'cross' });
+                        }
+                        break;
+
+                    case 40:
+                        if (!hit_ship) {
+                            _this.setState({ hit_40: 'failed' });
+                        } else {
+                            _this.setState({ hit_40: 'cross' });
+                        }
+                        break;
+                    case 41:
+                        if (!hit_ship) {
+                            _this.setState({ hit_41: 'failed' });
+                        } else {
+                            _this.setState({ hit_41: 'cross' });
+                        }
+                        break;
+                    case 42:
+                        if (!hit_ship) {
+                            _this.setState({ hit_42: 'failed' });
+                        } else {
+                            _this.setState({ hit_42: 'cross' });
+                        }
+                        break;
+                    case 43:
+                        if (!hit_ship) {
+                            _this.setState({ hit_43: 'failed' });
+                        } else {
+                            _this.setState({ hit_43: 'cross' });
+                        }
+                        break;
+                    case 44:
+                        if (!hit_ship) {
+                            _this.setState({ hit_44: 'failed' });
+                        } else {
+                            _this.setState({ hit_44: 'cross' });
+                        }
+                        break;
+                    case 45:
+                        if (!hit_ship) {
+                            _this.setState({ hit_45: 'failed' });
+                        } else {
+                            _this.setState({ hit_45: 'cross' });
+                        }
+                        break;
+                    case 46:
+                        if (!hit_ship) {
+                            _this.setState({ hit_46: 'failed' });
+                        } else {
+                            _this.setState({ hit_46: 'cross' });
+                        }
+                        break;
+                    case 47:
+                        if (!hit_ship) {
+                            _this.setState({ hit_47: 'failed' });
+                        } else {
+                            _this.setState({ hit_47: 'cross' });
+                        }
+                        break;
+                    case 48:
+                        if (!hit_ship) {
+                            _this.setState({ hit_48: 'failed' });
+                        } else {
+                            _this.setState({ hit_48: 'cross' });
+                        }
+                        break;
+                    case 49:
+                        if (!hit_ship) {
+                            _this.setState({ hit_49: 'failed' });
+                        } else {
+                            _this.setState({ hit_49: 'cross' });
+                        }
+                        break;
+
+                    case 50:
+                        if (!hit_ship) {
+                            _this.setState({ hit_50: 'failed' });
+                        } else {
+                            _this.setState({ hit_50: 'cross' });
+                        }
+                        break;
+                    case 51:
+                        if (!hit_ship) {
+                            _this.setState({ hit_51: 'failed' });
+                        } else {
+                            _this.setState({ hit_51: 'cross' });
+                        }
+                        break;
+                    case 52:
+                        if (!hit_ship) {
+                            _this.setState({ hit_52: 'failed' });
+                        } else {
+                            _this.setState({ hit_52: 'cross' });
+                        }
+                        break;
+                    case 53:
+                        if (!hit_ship) {
+                            _this.setState({ hit_53: 'failed' });
+                        } else {
+                            _this.setState({ hit_53: 'cross' });
+                        }
+                        break;
+                    case 54:
+                        if (!hit_ship) {
+                            _this.setState({ hit_54: 'failed' });
+                        } else {
+                            _this.setState({ hit_54: 'cross' });
+                        }
+                        break;
+                    case 55:
+                        if (!hit_ship) {
+                            _this.setState({ hit_55: 'failed' });
+                        } else {
+                            _this.setState({ hit_55: 'cross' });
+                        }
+                        break;
+                    case 56:
+                        if (!hit_ship) {
+                            _this.setState({ hit_56: 'failed' });
+                        } else {
+                            _this.setState({ hit_56: 'cross' });
+                        }
+                        break;
+                    case 57:
+                        if (!hit_ship) {
+                            _this.setState({ hit_57: 'failed' });
+                        } else {
+                            _this.setState({ hit_57: 'cross' });
+                        }
+                        break;
+                    case 58:
+                        if (!hit_ship) {
+                            _this.setState({ hit_58: 'failed' });
+                        } else {
+                            _this.setState({ hit_58: 'cross' });
+                        }
+                        break;
+                    case 59:
+                        if (!hit_ship) {
+                            _this.setState({ hit_59: 'failed' });
+                        } else {
+                            _this.setState({ hit_59: 'cross' });
+                        }
+                        break;
+
+                    case 60:
+                        if (!hit_ship) {
+                            _this.setState({ hit_60: 'failed' });
+                        } else {
+                            _this.setState({ hit_60: 'cross' });
+                        }
+                        break;
+                    case 61:
+                        if (!hit_ship) {
+                            _this.setState({ hit_61: 'failed' });
+                        } else {
+                            _this.setState({ hit_61: 'cross' });
+                        }
+                        break;
+                    case 62:
+                        if (!hit_ship) {
+                            _this.setState({ hit_62: 'failed' });
+                        } else {
+                            _this.setState({ hit_62: 'cross' });
+                        }
+                        break;
+                    case 63:
+                        if (!hit_ship) {
+                            _this.setState({ hit_63: 'failed' });
+                        } else {
+                            _this.setState({ hit_63: 'cross' });
+                        }
+                        break;
+                    case 64:
+                        if (!hit_ship) {
+                            _this.setState({ hit_64: 'failed' });
+                        } else {
+                            _this.setState({ hit_64: 'cross' });
+                        }
+                        break;
+                    case 65:
+                        if (!hit_ship) {
+                            _this.setState({ hit_65: 'failed' });
+                        } else {
+                            _this.setState({ hit_65: 'cross' });
+                        }
+                        break;
+                    case 66:
+                        if (!hit_ship) {
+                            _this.setState({ hit_66: 'failed' });
+                        } else {
+                            _this.setState({ hit_66: 'cross' });
+                        }
+                        break;
+                    case 67:
+                        if (!hit_ship) {
+                            _this.setState({ hit_67: 'failed' });
+                        } else {
+                            _this.setState({ hit_67: 'cross' });
+                        }
+                        break;
+                    case 68:
+                        if (!hit_ship) {
+                            _this.setState({ hit_68: 'failed' });
+                        } else {
+                            _this.setState({ hit_68: 'cross' });
+                        }
+                        break;
+                    case 69:
+                        if (!hit_ship) {
+                            _this.setState({ hit_69: 'failed' });
+                        } else {
+                            _this.setState({ hit_69: 'cross' });
+                        }
+                        break;
+
+                    case 70:
+                        if (!hit_ship) {
+                            _this.setState({ hit_70: 'failed' });
+                        } else {
+                            _this.setState({ hit_70: 'cross' });
+                        }
+                        break;
+                    case 71:
+                        if (!hit_ship) {
+                            _this.setState({ hit_71: 'failed' });
+                        } else {
+                            _this.setState({ hit_71: 'cross' });
+                        }
+                        break;
+                    case 72:
+                        if (!hit_ship) {
+                            _this.setState({ hit_72: 'failed' });
+                        } else {
+                            _this.setState({ hit_72: 'cross' });
+                        }
+                        break;
+                    case 73:
+                        if (!hit_ship) {
+                            _this.setState({ hit_73: 'failed' });
+                        } else {
+                            _this.setState({ hit_73: 'cross' });
+                        }
+                        break;
+                    case 74:
+                        if (!hit_ship) {
+                            _this.setState({ hit_74: 'failed' });
+                        } else {
+                            _this.setState({ hit_74: 'cross' });
+                        }
+                        break;
+                    case 75:
+                        if (!hit_ship) {
+                            _this.setState({ hit_75: 'failed' });
+                        } else {
+                            _this.setState({ hit_75: 'cross' });
+                        }
+                        break;
+                    case 76:
+                        if (!hit_ship) {
+                            _this.setState({ hit_76: 'failed' });
+                        } else {
+                            _this.setState({ hit_76: 'cross' });
+                        }
+                        break;
+                    case 77:
+                        if (!hit_ship) {
+                            _this.setState({ hit_77: 'failed' });
+                        } else {
+                            _this.setState({ hit_77: 'cross' });
+                        }
+                        break;
+                    case 78:
+                        if (!hit_ship) {
+                            _this.setState({ hit_78: 'failed' });
+                        } else {
+                            _this.setState({ hit_78: 'cross' });
+                        }
+                        break;
+                    case 79:
+                        if (!hit_ship) {
+                            _this.setState({ hit_79: 'failed' });
+                        } else {
+                            _this.setState({ hit_79: 'cross' });
+                        }
+                        break;
+
+                    case 80:
+                        if (!hit_ship) {
+                            _this.setState({ hit_80: 'failed' });
+                        } else {
+                            _this.setState({ hit_80: 'cross' });
+                        }
+                        break;
+                    case 81:
+                        if (!hit_ship) {
+                            _this.setState({ hit_81: 'failed' });
+                        } else {
+                            _this.setState({ hit_81: 'cross' });
+                        }
+                        break;
+                    case 82:
+                        if (!hit_ship) {
+                            _this.setState({ hit_82: 'failed' });
+                        } else {
+                            _this.setState({ hit_82: 'cross' });
+                        }
+                        break;
+                    case 83:
+                        if (!hit_ship) {
+                            _this.setState({ hit_83: 'failed' });
+                        } else {
+                            _this.setState({ hit_83: 'cross' });
+                        }
+                        break;
+                    case 84:
+                        if (!hit_ship) {
+                            _this.setState({ hit_84: 'failed' });
+                        } else {
+                            _this.setState({ hit_84: 'cross' });
+                        }
+                        break;
+                    case 85:
+                        if (!hit_ship) {
+                            _this.setState({ hit_85: 'failed' });
+                        } else {
+                            _this.setState({ hit_85: 'cross' });
+                        }
+                        break;
+                    case 86:
+                        if (!hit_ship) {
+                            _this.setState({ hit_86: 'failed' });
+                        } else {
+                            _this.setState({ hit_86: 'cross' });
+                        }
+                        break;
+                    case 87:
+                        if (!hit_ship) {
+                            _this.setState({ hit_87: 'failed' });
+                        } else {
+                            _this.setState({ hit_87: 'cross' });
+                        }
+                        break;
+                    case 88:
+                        if (!hit_ship) {
+                            _this.setState({ hit_88: 'failed' });
+                        } else {
+                            _this.setState({ hit_88: 'cross' });
+                        }
+                        break;
+                    case 89:
+                        if (!hit_ship) {
+                            _this.setState({ hit_89: 'failed' });
+                        } else {
+                            _this.setState({ hit_89: 'cross' });
+                        }
+                        break;
+
+                    case 90:
+                        if (!hit_ship) {
+                            _this.setState({ hit_90: 'failed' });
+                        } else {
+                            _this.setState({ hit_90: 'cross' });
+                        }
+                        break;
+                    case 91:
+                        if (!hit_ship) {
+                            _this.setState({ hit_91: 'failed' });
+                        } else {
+                            _this.setState({ hit_91: 'cross' });
+                        }
+                        break;
+                    case 92:
+                        if (!hit_ship) {
+                            _this.setState({ hit_92: 'failed' });
+                        } else {
+                            _this.setState({ hit_92: 'cross' });
+                        }
+                        break;
+                    case 93:
+                        if (!hit_ship) {
+                            _this.setState({ hit_93: 'failed' });
+                        } else {
+                            _this.setState({ hit_93: 'cross' });
+                        }
+                        break;
+                    case 94:
+                        if (!hit_ship) {
+                            _this.setState({ hit_94: 'failed' });
+                        } else {
+                            _this.setState({ hit_94: 'cross' });
+                        }
+                        break;
+                    case 95:
+                        if (!hit_ship) {
+                            _this.setState({ hit_95: 'failed' });
+                        } else {
+                            _this.setState({ hit_95: 'cross' });
+                        }
+                        break;
+                    case 96:
+                        if (!hit_ship) {
+                            _this.setState({ hit_96: 'failed' });
+                        } else {
+                            _this.setState({ hit_96: 'cross' });
+                        }
+                        break;
+                    case 97:
+                        if (!hit_ship) {
+                            _this.setState({ hit_97: 'failed' });
+                        } else {
+                            _this.setState({ hit_97: 'cross' });
+                        }
+                        break;
+                    case 98:
+                        if (!hit_ship) {
+                            _this.setState({ hit_98: 'failed' });
+                        } else {
+                            _this.setState({ hit_98: 'cross' });
+                        }
+                        break;
+                    case 99:
+                        if (!hit_ship) {
+                            _this.setState({ hit_99: 'failed' });
+                        } else {
+                            _this.setState({ hit_99: 'cross' });
+                        }
+                        break;
+                }
             }
         });
     },
     attack: function attack(square_id) {
-        this.props.channel.push("attack", { user: random_number, square_id: square_id });
+        this.props.channel.push("attack", { user: this.props.user, square_id: square_id, game: this.props.game });
     },
     onSquareClicked: function onSquareClicked(square_id) {
         var my_grid = this.props.my_grid;
@@ -39322,400 +40113,400 @@ var Grid = React.createClass({
         var _this2 = this;
 
         return React.createElement(
-            'div',
+            "div",
             null,
             React.createElement(
-                'table',
+                "table",
                 null,
                 React.createElement(
-                    'tbody',
+                    "tbody",
                     null,
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(0);
                             }, style: { backgroundColor: this.state.bg_color_0 }, className: this.state.hit_0 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(1);
                             }, style: { backgroundColor: this.state.bg_color_1 }, className: this.state.hit_1 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(2);
                             }, style: { backgroundColor: this.state.bg_color_2 }, className: this.state.hit_2 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(3);
                             }, style: { backgroundColor: this.state.bg_color_3 }, className: this.state.hit_3 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(4);
                             }, style: { backgroundColor: this.state.bg_color_4 }, className: this.state.hit_4 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(5);
                             }, style: { backgroundColor: this.state.bg_color_5 }, className: this.state.hit_5 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(6);
                             }, style: { backgroundColor: this.state.bg_color_6 }, className: this.state.hit_6 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(7);
                             }, style: { backgroundColor: this.state.bg_color_7 }, className: this.state.hit_7 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(8);
                             }, style: { backgroundColor: this.state.bg_color_8 }, className: this.state.hit_8 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(9);
                             }, style: { backgroundColor: this.state.bg_color_9 }, className: this.state.hit_9 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(10);
                             }, style: { backgroundColor: this.state.bg_color_10 }, className: this.state.hit_10 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(11);
                             }, style: { backgroundColor: this.state.bg_color_11 }, className: this.state.hit_11 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(12);
                             }, style: { backgroundColor: this.state.bg_color_12 }, className: this.state.hit_12 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(13);
                             }, style: { backgroundColor: this.state.bg_color_13 }, className: this.state.hit_13 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(14);
                             }, style: { backgroundColor: this.state.bg_color_14 }, className: this.state.hit_14 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(15);
                             }, style: { backgroundColor: this.state.bg_color_15 }, className: this.state.hit_15 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(16);
                             }, style: { backgroundColor: this.state.bg_color_16 }, className: this.state.hit_16 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(17);
                             }, style: { backgroundColor: this.state.bg_color_17 }, className: this.state.hit_17 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(18);
                             }, style: { backgroundColor: this.state.bg_color_18 }, className: this.state.hit_18 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(19);
                             }, style: { backgroundColor: this.state.bg_color_19 }, className: this.state.hit_19 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(20);
                             }, style: { backgroundColor: this.state.bg_color_20 }, className: this.state.hit_20 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(21);
                             }, style: { backgroundColor: this.state.bg_color_21 }, className: this.state.hit_21 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(22);
                             }, style: { backgroundColor: this.state.bg_color_22 }, className: this.state.hit_22 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(23);
                             }, style: { backgroundColor: this.state.bg_color_23 }, className: this.state.hit_23 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(24);
                             }, style: { backgroundColor: this.state.bg_color_24 }, className: this.state.hit_24 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(25);
                             }, style: { backgroundColor: this.state.bg_color_25 }, className: this.state.hit_25 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(26);
                             }, style: { backgroundColor: this.state.bg_color_26 }, className: this.state.hit_26 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(27);
                             }, style: { backgroundColor: this.state.bg_color_27 }, className: this.state.hit_27 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(28);
                             }, style: { backgroundColor: this.state.bg_color_28 }, className: this.state.hit_28 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(29);
                             }, style: { backgroundColor: this.state.bg_color_29 }, className: this.state.hit_29 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(30);
                             }, style: { backgroundColor: this.state.bg_color_30 }, className: this.state.hit_30 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(31);
                             }, style: { backgroundColor: this.state.bg_color_31 }, className: this.state.hit_31 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(32);
                             }, style: { backgroundColor: this.state.bg_color_32 }, className: this.state.hit_32 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(33);
                             }, style: { backgroundColor: this.state.bg_color_33 }, className: this.state.hit_33 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(34);
                             }, style: { backgroundColor: this.state.bg_color_34 }, className: this.state.hit_34 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(35);
                             }, style: { backgroundColor: this.state.bg_color_35 }, className: this.state.hit_35 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(36);
                             }, style: { backgroundColor: this.state.bg_color_36 }, className: this.state.hit_36 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(37);
                             }, style: { backgroundColor: this.state.bg_color_37 }, className: this.state.hit_37 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(38);
                             }, style: { backgroundColor: this.state.bg_color_38 }, className: this.state.hit_38 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(39);
                             }, style: { backgroundColor: this.state.bg_color_39 }, className: this.state.hit_39 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(40);
                             }, style: { backgroundColor: this.state.bg_color_40 }, className: this.state.hit_40 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(41);
                             }, style: { backgroundColor: this.state.bg_color_41 }, className: this.state.hit_41 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(42);
                             }, style: { backgroundColor: this.state.bg_color_42 }, className: this.state.hit_42 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(43);
                             }, style: { backgroundColor: this.state.bg_color_43 }, className: this.state.hit_43 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(44);
                             }, style: { backgroundColor: this.state.bg_color_44 }, className: this.state.hit_44 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(45);
                             }, style: { backgroundColor: this.state.bg_color_45 }, className: this.state.hit_45 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(46);
                             }, style: { backgroundColor: this.state.bg_color_46 }, className: this.state.hit_46 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(47);
                             }, style: { backgroundColor: this.state.bg_color_47 }, className: this.state.hit_47 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(48);
                             }, style: { backgroundColor: this.state.bg_color_48 }, className: this.state.hit_48 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(49);
                             }, style: { backgroundColor: this.state.bg_color_49 }, className: this.state.hit_49 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(50);
                             }, style: { backgroundColor: this.state.bg_color_50 }, className: this.state.hit_50 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(51);
                             }, style: { backgroundColor: this.state.bg_color_51 }, className: this.state.hit_51 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(52);
                             }, style: { backgroundColor: this.state.bg_color_52 }, className: this.state.hit_52 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(53);
                             }, style: { backgroundColor: this.state.bg_color_53 }, className: this.state.hit_53 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(54);
                             }, style: { backgroundColor: this.state.bg_color_54 }, className: this.state.hit_54 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(55);
                             }, style: { backgroundColor: this.state.bg_color_55 }, className: this.state.hit_55 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(56);
                             }, style: { backgroundColor: this.state.bg_color_56 }, className: this.state.hit_56 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(57);
                             }, style: { backgroundColor: this.state.bg_color_57 }, className: this.state.hit_57 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(58);
                             }, style: { backgroundColor: this.state.bg_color_58 }, className: this.state.hit_58 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(59);
                             }, style: { backgroundColor: this.state.bg_color_59 }, className: this.state.hit_59 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(60);
                             }, style: { backgroundColor: this.state.bg_color_60 }, className: this.state.hit_60 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(61);
                             }, style: { backgroundColor: this.state.bg_color_61 }, className: this.state.hit_61 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(62);
                             }, style: { backgroundColor: this.state.bg_color_62 }, className: this.state.hit_62 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(63);
                             }, style: { backgroundColor: this.state.bg_color_63 }, className: this.state.hit_63 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(64);
                             }, style: { backgroundColor: this.state.bg_color_64 }, className: this.state.hit_64 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(65);
                             }, style: { backgroundColor: this.state.bg_color_65 }, className: this.state.hit_65 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(66);
                             }, style: { backgroundColor: this.state.bg_color_66 }, className: this.state.hit_66 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(67);
                             }, style: { backgroundColor: this.state.bg_color_67 }, className: this.state.hit_67 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(68);
                             }, style: { backgroundColor: this.state.bg_color_68 }, className: this.state.hit_68 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(69);
                             }, style: { backgroundColor: this.state.bg_color_69 }, className: this.state.hit_69 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(70);
                             }, style: { backgroundColor: this.state.bg_color_70 }, className: this.state.hit_70 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(71);
                             }, style: { backgroundColor: this.state.bg_color_71 }, className: this.state.hit_71 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(72);
                             }, style: { backgroundColor: this.state.bg_color_72 }, className: this.state.hit_72 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(73);
                             }, style: { backgroundColor: this.state.bg_color_73 }, className: this.state.hit_73 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(74);
                             }, style: { backgroundColor: this.state.bg_color_74 }, className: this.state.hit_74 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(75);
                             }, style: { backgroundColor: this.state.bg_color_75 }, className: this.state.hit_75 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(76);
                             }, style: { backgroundColor: this.state.bg_color_76 }, className: this.state.hit_76 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(77);
                             }, style: { backgroundColor: this.state.bg_color_77 }, className: this.state.hit_77 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(78);
                             }, style: { backgroundColor: this.state.bg_color_78 }, className: this.state.hit_78 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(79);
                             }, style: { backgroundColor: this.state.bg_color_79 }, className: this.state.hit_79 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(80);
                             }, style: { backgroundColor: this.state.bg_color_80 }, className: this.state.hit_80 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(81);
                             }, style: { backgroundColor: this.state.bg_color_81 }, className: this.state.hit_81 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(82);
                             }, style: { backgroundColor: this.state.bg_color_82 }, className: this.state.hit_82 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(83);
                             }, style: { backgroundColor: this.state.bg_color_83 }, className: this.state.hit_83 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(84);
                             }, style: { backgroundColor: this.state.bg_color_84 }, className: this.state.hit_84 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(85);
                             }, style: { backgroundColor: this.state.bg_color_85 }, className: this.state.hit_85 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(86);
                             }, style: { backgroundColor: this.state.bg_color_86 }, className: this.state.hit_86 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(87);
                             }, style: { backgroundColor: this.state.bg_color_87 }, className: this.state.hit_87 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(88);
                             }, style: { backgroundColor: this.state.bg_color_88 }, className: this.state.hit_88 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(89);
                             }, style: { backgroundColor: this.state.bg_color_89 }, className: this.state.hit_89 })
                     ),
                     React.createElement(
-                        'tr',
+                        "tr",
                         null,
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(90);
                             }, style: { backgroundColor: this.state.bg_color_90 }, className: this.state.hit_90 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(91);
                             }, style: { backgroundColor: this.state.bg_color_91 }, className: this.state.hit_91 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(92);
                             }, style: { backgroundColor: this.state.bg_color_92 }, className: this.state.hit_92 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(93);
                             }, style: { backgroundColor: this.state.bg_color_93 }, className: this.state.hit_93 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(94);
                             }, style: { backgroundColor: this.state.bg_color_94 }, className: this.state.hit_94 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(95);
                             }, style: { backgroundColor: this.state.bg_color_95 }, className: this.state.hit_95 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(96);
                             }, style: { backgroundColor: this.state.bg_color_96 }, className: this.state.hit_96 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(97);
                             }, style: { backgroundColor: this.state.bg_color_97 }, className: this.state.hit_97 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(98);
                             }, style: { backgroundColor: this.state.bg_color_98 }, className: this.state.hit_98 }),
-                        React.createElement('th', { onClick: function onClick() {
+                        React.createElement("th", { onClick: function onClick() {
                                 return _this2.onSquareClicked(99);
                             }, style: { backgroundColor: this.state.bg_color_99 }, className: this.state.hit_99 })
                     )
                 )
             ),
             this.state.state_ship_5 == 0 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You must position the 5-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You must position the 5-block-ship"
             ) : this.state.state_ship_5 == 1 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You are positioning the 5-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You are positioning the 5-block-ship"
             ) : this.state.state_ship_4 == 0 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You must position the 4-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You must position the 4-block-ship"
             ) : this.state.state_ship_4 == 1 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You are positioning the 4-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You are positioning the 4-block-ship"
             ) : this.state.state_ship_3_1 == 0 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You must position one of the 3-block-ships'
+                "div",
+                { className: "messageMyGrid" },
+                "You must position one of the 3-block-ships"
             ) : this.state.state_ship_3_1 == 1 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You are positioning one of the 3-block-ships'
+                "div",
+                { className: "messageMyGrid" },
+                "You are positioning one of the 3-block-ships"
             ) : this.state.state_ship_3_2 == 0 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You must position the second 3-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You must position the second 3-block-ship"
             ) : this.state.state_ship_3_2 == 1 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You are positioning the second 3-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You are positioning the second 3-block-ship"
             ) : this.state.state_ship_2 == 0 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You must position the 2-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You must position the 2-block-ship"
             ) : this.state.state_ship_2 == 1 && this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You are positioning the 2-block-ship'
+                "div",
+                { className: "messageMyGrid" },
+                "You are positioning the 2-block-ship"
             ) : this.props.my_grid == "true" ? React.createElement(
-                'div',
-                { className: 'messageMyGrid' },
-                'You have positioned all of the ships!'
+                "div",
+                { className: "messageMyGrid" },
+                "You have positioned all of the ships!"
             ) : null
         );
     }

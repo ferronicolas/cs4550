@@ -1,11 +1,10 @@
 var ships_placed = false;
-var random_number = Math.random() * 20;
 
 var Grid = React.createClass({
 
     getInitialState: function(){
 
-        if (this.props.my_grid == "true"){
+        if (this.props.my_grid == "true" || this.props.my_grid == "false"){
            this.set_receive_message(); 
         }
 
@@ -22,6 +21,23 @@ var Grid = React.createClass({
             ship3_1_position: 'vertical',
             ship2_position: 'vertical',
         };
+    },
+
+    sendShips(){
+        this.props.channel.push("my_ships", 
+            {
+                "game": this.props.game,
+                "user": this.props.user, 
+                "ships": 
+                        {
+                            "ship_5": this.state.ship_5, 
+                            "ship_4": this.state.ship_4, 
+                            "ship_3_1": this.state.ship_3_1,
+                            "ship_3_2": this.state.ship_3_2, 
+                            "ship_2": this.state.ship_2
+                        }
+            }
+        );
     },
 
     logicShip(square_id, length_of_ship_so_far, length_of_ship, ship, color, id){
@@ -44,6 +60,7 @@ var Grid = React.createClass({
                     }else if (length_of_ship == 2){
                         this.setState({state_ship_2: 2, ships_already_placed: true});
                         ships_placed = true;
+                        this.sendShips();
                     }
                 }else if ((square_id + 10 == ship[0]) ||
                           (square_id - 10 == ship[0]) ){
@@ -60,6 +77,7 @@ var Grid = React.createClass({
                     }else if (length_of_ship == 2){
                         this.setState({state_ship_2: 2, ships_already_placed: true});
                         ships_placed = true;
+                        this.sendShips();
                     }
                 }else{
                     console.log("Invalid block!");
@@ -238,8 +256,10 @@ var Grid = React.createClass({
     },
 
     set_receive_message(){
+
         this.props.channel.on("attack", payload => {
-            if (this.props.my_grid == "true" && payload.user != random_number){ // Means that the other user sent the message
+            var my_grid = this.props.my_grid;
+            if (my_grid == "true" && payload.user != this.props.user){ // Means that the other user sent the message
                 var square_id = payload.square_id;
                 switch (square_id){
                     case 0:
@@ -1057,12 +1077,731 @@ var Grid = React.createClass({
                         }
                         break;
                 }
+            }else if (my_grid == "false" && payload.user == this.props.user){
+                var square_id = payload.square_id;
+                var hit_ship = payload.hit_ship
+                switch (square_id){
+                    case 0:
+                        if (!hit_ship){
+                            this.setState({hit_0: 'failed'});
+                        }else{
+                            this.setState({hit_0: 'cross'});
+                        }
+                        break;
+                    case 1:
+                        if (!hit_ship){
+                            this.setState({hit_1: 'failed'});
+                        }else{
+                            this.setState({hit_1: 'cross'});
+                        }
+                        break;
+                    case 2:
+                        if (!hit_ship){
+                            this.setState({hit_2: 'failed'});
+                        }else{
+                            this.setState({hit_2: 'cross'});
+                        }
+                        break;  
+                    case 3:
+                        if (!hit_ship){
+                            this.setState({hit_3: 'failed'});
+                        }else{
+                            this.setState({hit_3: 'cross'});
+                        }
+                        break;
+                    case 4:
+                        if (!hit_ship){
+                            this.setState({hit_4: 'failed'});
+                        }else{
+                            this.setState({hit_4: 'cross'});
+                        }
+                        break;
+                    case 5:
+                        if (!hit_ship){
+                            this.setState({hit_5: 'failed'});
+                        }else{
+                            this.setState({hit_5: 'cross'});
+                        }
+                        break;
+                    case 6:
+                        if (!hit_ship){
+                            this.setState({hit_6: 'failed'});
+                        }else{
+                            this.setState({hit_6: 'cross'});
+                        }
+                        break;
+                    case 7:
+                        if (!hit_ship){
+                            this.setState({hit_7: 'failed'});
+                        }else{
+                            this.setState({hit_7: 'cross'});
+                        }
+                        break;
+                    case 8:
+                        if (!hit_ship){
+                            this.setState({hit_8: 'failed'});
+                        }else{
+                            this.setState({hit_8: 'cross'});
+                        }
+                        break;
+                    case 9:
+                        if (!hit_ship){
+                            this.setState({hit_9: 'failed'});
+                        }else{
+                            this.setState({hit_9: 'cross'});
+                        }
+                        break;
+
+                    case 10:
+                        if (!hit_ship){
+                            this.setState({hit_10: 'failed'});
+                        }else{
+                            this.setState({hit_10: 'cross'});
+                        }
+                        break;
+                    case 11:
+                        if (!hit_ship){
+                            this.setState({hit_11: 'failed'});
+                        }else{
+                            this.setState({hit_11: 'cross'});
+                        }
+                        break;
+                    case 12:
+                        if (!hit_ship){
+                            this.setState({hit_12: 'failed'});
+                        }else{
+                            this.setState({hit_12: 'cross'});
+                        }
+                        break;  
+                    case 13:
+                        if (!hit_ship){
+                            this.setState({hit_13: 'failed'});
+                        }else{
+                            this.setState({hit_13: 'cross'});
+                        }
+                        break;
+                    case 14:
+                        if (!hit_ship){
+                            this.setState({hit_14: 'failed'});
+                        }else{
+                            this.setState({hit_14: 'cross'});
+                        }
+                        break;
+                    case 15:
+                        if (!hit_ship){
+                            this.setState({hit_15: 'failed'});
+                        }else{
+                            this.setState({hit_15: 'cross'});
+                        }
+                        break;
+                    case 16:
+                        if (!hit_ship){
+                            this.setState({hit_16: 'failed'});
+                        }else{
+                            this.setState({hit_16: 'cross'});
+                        }
+                        break;
+                    case 17:
+                        if (!hit_ship){
+                            this.setState({hit_17: 'failed'});
+                        }else{
+                            this.setState({hit_17: 'cross'});
+                        }
+                        break;
+                    case 18:
+                        if (!hit_ship){
+                            this.setState({hit_18: 'failed'});
+                        }else{
+                            this.setState({hit_18: 'cross'});
+                        }
+                        break;
+                    case 19:
+                        if (!hit_ship){
+                            this.setState({hit_19: 'failed'});
+                        }else{
+                            this.setState({hit_19: 'cross'});
+                        }
+                        break;
+
+                    case 20:
+                        if (!hit_ship){
+                            this.setState({hit_20: 'failed'});
+                        }else{
+                            this.setState({hit_20: 'cross'});
+                        }
+                        break;
+                    case 21:
+                        if (!hit_ship){
+                            this.setState({hit_21: 'failed'});
+                        }else{
+                            this.setState({hit_21: 'cross'});
+                        }
+                        break;
+                    case 22:
+                        if (!hit_ship){
+                            this.setState({hit_22: 'failed'});
+                        }else{
+                            this.setState({hit_22: 'cross'});
+                        }
+                        break;  
+                    case 23:
+                        if (!hit_ship){
+                            this.setState({hit_23: 'failed'});
+                        }else{
+                            this.setState({hit_23: 'cross'});
+                        }
+                        break;
+                    case 24:
+                        if (!hit_ship){
+                            this.setState({hit_24: 'failed'});
+                        }else{
+                            this.setState({hit_24: 'cross'});
+                        }
+                        break;
+                    case 25:
+                        if (!hit_ship){
+                            this.setState({hit_25: 'failed'});
+                        }else{
+                            this.setState({hit_25: 'cross'});
+                        }
+                        break;
+                    case 26:
+                        if (!hit_ship){
+                            this.setState({hit_26: 'failed'});
+                        }else{
+                            this.setState({hit_26: 'cross'});
+                        }
+                        break;
+                    case 27:
+                        if (!hit_ship){
+                            this.setState({hit_27: 'failed'});
+                        }else{
+                            this.setState({hit_27: 'cross'});
+                        }
+                        break;
+                    case 28:
+                        if (!hit_ship){
+                            this.setState({hit_28: 'failed'});
+                        }else{
+                            this.setState({hit_28: 'cross'});
+                        }
+                        break;
+                    case 29:
+                        if (!hit_ship){
+                            this.setState({hit_29: 'failed'});
+                        }else{
+                            this.setState({hit_29: 'cross'});
+                        }
+                        break;
+
+                    case 30:
+                        if (!hit_ship){
+                            this.setState({hit_30: 'failed'});
+                        }else{
+                            this.setState({hit_30: 'cross'});
+                        }
+                        break;
+                    case 31:
+                        if (!hit_ship){
+                            this.setState({hit_31: 'failed'});
+                        }else{
+                            this.setState({hit_31: 'cross'});
+                        }
+                        break;
+                    case 32:
+                        if (!hit_ship){
+                            this.setState({hit_32: 'failed'});
+                        }else{
+                            this.setState({hit_32: 'cross'});
+                        }
+                        break;  
+                    case 33:
+                        if (!hit_ship){
+                            this.setState({hit_33: 'failed'});
+                        }else{
+                            this.setState({hit_33: 'cross'});
+                        }
+                        break;
+                    case 34:
+                        if (!hit_ship){
+                            this.setState({hit_34: 'failed'});
+                        }else{
+                            this.setState({hit_34: 'cross'});
+                        }
+                        break;
+                    case 35:
+                        if (!hit_ship){
+                            this.setState({hit_35: 'failed'});
+                        }else{
+                            this.setState({hit_35: 'cross'});
+                        }
+                        break;
+                    case 36:
+                        if (!hit_ship){
+                            this.setState({hit_36: 'failed'});
+                        }else{
+                            this.setState({hit_36: 'cross'});
+                        }
+                        break;
+                    case 37:
+                        if (!hit_ship){
+                            this.setState({hit_37: 'failed'});
+                        }else{
+                            this.setState({hit_37: 'cross'});
+                        }
+                        break;
+                    case 38:
+                        if (!hit_ship){
+                            this.setState({hit_38: 'failed'});
+                        }else{
+                            this.setState({hit_38: 'cross'});
+                        }
+                        break;
+                    case 39:
+                        if (!hit_ship){
+                            this.setState({hit_39: 'failed'});
+                        }else{
+                            this.setState({hit_39: 'cross'});
+                        }
+                        break;
+
+
+                    case 40:
+                        if (!hit_ship){
+                            this.setState({hit_40: 'failed'});
+                        }else{
+                            this.setState({hit_40: 'cross'});
+                        }
+                        break;
+                    case 41:
+                        if (!hit_ship){
+                            this.setState({hit_41: 'failed'});
+                        }else{
+                            this.setState({hit_41: 'cross'});
+                        }
+                        break;
+                    case 42:
+                        if (!hit_ship){
+                            this.setState({hit_42: 'failed'});
+                        }else{
+                            this.setState({hit_42: 'cross'});
+                        }
+                        break;  
+                    case 43:
+                        if (!hit_ship){
+                            this.setState({hit_43: 'failed'});
+                        }else{
+                            this.setState({hit_43: 'cross'});
+                        }
+                        break;
+                    case 44:
+                        if (!hit_ship){
+                            this.setState({hit_44: 'failed'});
+                        }else{
+                            this.setState({hit_44: 'cross'});
+                        }
+                        break;
+                    case 45:
+                        if (!hit_ship){
+                            this.setState({hit_45: 'failed'});
+                        }else{
+                            this.setState({hit_45: 'cross'});
+                        }
+                        break;
+                    case 46:
+                        if (!hit_ship){
+                            this.setState({hit_46: 'failed'});
+                        }else{
+                            this.setState({hit_46: 'cross'});
+                        }
+                        break;
+                    case 47:
+                        if (!hit_ship){
+                            this.setState({hit_47: 'failed'});
+                        }else{
+                            this.setState({hit_47: 'cross'});
+                        }
+                        break;
+                    case 48:
+                        if (!hit_ship){
+                            this.setState({hit_48: 'failed'});
+                        }else{
+                            this.setState({hit_48: 'cross'});
+                        }
+                        break;
+                    case 49:
+                        if (!hit_ship){
+                            this.setState({hit_49: 'failed'});
+                        }else{
+                            this.setState({hit_49: 'cross'});
+                        }
+                        break;
+
+
+                    case 50:
+                        if (!hit_ship){
+                            this.setState({hit_50: 'failed'});
+                        }else{
+                            this.setState({hit_50: 'cross'});
+                        }
+                        break;
+                    case 51:
+                        if (!hit_ship){
+                            this.setState({hit_51: 'failed'});
+                        }else{
+                            this.setState({hit_51: 'cross'});
+                        }
+                        break;
+                    case 52:
+                        if (!hit_ship){
+                            this.setState({hit_52: 'failed'});
+                        }else{
+                            this.setState({hit_52: 'cross'});
+                        }
+                        break;  
+                    case 53:
+                        if (!hit_ship){
+                            this.setState({hit_53: 'failed'});
+                        }else{
+                            this.setState({hit_53: 'cross'});
+                        }
+                        break;
+                    case 54:
+                        if (!hit_ship){
+                            this.setState({hit_54: 'failed'});
+                        }else{
+                            this.setState({hit_54: 'cross'});
+                        }
+                        break;
+                    case 55:
+                        if (!hit_ship){
+                            this.setState({hit_55: 'failed'});
+                        }else{
+                            this.setState({hit_55: 'cross'});
+                        }
+                        break;
+                    case 56:
+                        if (!hit_ship){
+                            this.setState({hit_56: 'failed'});
+                        }else{
+                            this.setState({hit_56: 'cross'});
+                        }
+                        break;
+                    case 57:
+                        if (!hit_ship){
+                            this.setState({hit_57: 'failed'});
+                        }else{
+                            this.setState({hit_57: 'cross'});
+                        }
+                        break;
+                    case 58:
+                        if (!hit_ship){
+                            this.setState({hit_58: 'failed'});
+                        }else{
+                            this.setState({hit_58: 'cross'});
+                        }
+                        break;
+                    case 59:
+                        if (!hit_ship){
+                            this.setState({hit_59: 'failed'});
+                        }else{
+                            this.setState({hit_59: 'cross'});
+                        }
+                        break;
+
+
+                    case 60:
+                        if (!hit_ship){
+                            this.setState({hit_60: 'failed'});
+                        }else{
+                            this.setState({hit_60: 'cross'});
+                        }
+                        break;
+                    case 61:
+                        if (!hit_ship){
+                            this.setState({hit_61: 'failed'});
+                        }else{
+                            this.setState({hit_61: 'cross'});
+                        }
+                        break;
+                    case 62:
+                        if (!hit_ship){
+                            this.setState({hit_62: 'failed'});
+                        }else{
+                            this.setState({hit_62: 'cross'});
+                        }
+                        break;  
+                    case 63:
+                        if (!hit_ship){
+                            this.setState({hit_63: 'failed'});
+                        }else{
+                            this.setState({hit_63: 'cross'});
+                        }
+                        break;
+                    case 64:
+                        if (!hit_ship){
+                            this.setState({hit_64: 'failed'});
+                        }else{
+                            this.setState({hit_64: 'cross'});
+                        }
+                        break;
+                    case 65:
+                        if (!hit_ship){
+                            this.setState({hit_65: 'failed'});
+                        }else{
+                            this.setState({hit_65: 'cross'});
+                        }
+                        break;
+                    case 66:
+                        if (!hit_ship){
+                            this.setState({hit_66: 'failed'});
+                        }else{
+                            this.setState({hit_66: 'cross'});
+                        }
+                        break;
+                    case 67:
+                        if (!hit_ship){
+                            this.setState({hit_67: 'failed'});
+                        }else{
+                            this.setState({hit_67: 'cross'});
+                        }
+                        break;
+                    case 68:
+                        if (!hit_ship){
+                            this.setState({hit_68: 'failed'});
+                        }else{
+                            this.setState({hit_68: 'cross'});
+                        }
+                        break;
+                    case 69:
+                        if (!hit_ship){
+                            this.setState({hit_69: 'failed'});
+                        }else{
+                            this.setState({hit_69: 'cross'});
+                        }
+                        break;
+
+                    case 70:
+                        if (!hit_ship){
+                            this.setState({hit_70: 'failed'});
+                        }else{
+                            this.setState({hit_70: 'cross'});
+                        }
+                        break;
+                    case 71:
+                        if (!hit_ship){
+                            this.setState({hit_71: 'failed'});
+                        }else{
+                            this.setState({hit_71: 'cross'});
+                        }
+                        break;
+                    case 72:
+                        if (!hit_ship){
+                            this.setState({hit_72: 'failed'});
+                        }else{
+                            this.setState({hit_72: 'cross'});
+                        }
+                        break;  
+                    case 73:
+                        if (!hit_ship){
+                            this.setState({hit_73: 'failed'});
+                        }else{
+                            this.setState({hit_73: 'cross'});
+                        }
+                        break;
+                    case 74:
+                        if (!hit_ship){
+                            this.setState({hit_74: 'failed'});
+                        }else{
+                            this.setState({hit_74: 'cross'});
+                        }
+                        break;
+                    case 75:
+                        if (!hit_ship){
+                            this.setState({hit_75: 'failed'});
+                        }else{
+                            this.setState({hit_75: 'cross'});
+                        }
+                        break;
+                    case 76:
+                        if (!hit_ship){
+                            this.setState({hit_76: 'failed'});
+                        }else{
+                            this.setState({hit_76: 'cross'});
+                        }
+                        break;
+                    case 77:
+                        if (!hit_ship){
+                            this.setState({hit_77: 'failed'});
+                        }else{
+                            this.setState({hit_77: 'cross'});
+                        }
+                        break;
+                    case 78:
+                        if (!hit_ship){
+                            this.setState({hit_78: 'failed'});
+                        }else{
+                            this.setState({hit_78: 'cross'});
+                        }
+                        break;
+                    case 79:
+                        if (!hit_ship){
+                            this.setState({hit_79: 'failed'});
+                        }else{
+                            this.setState({hit_79: 'cross'});
+                        }
+                        break;
+
+
+                    case 80:
+                        if (!hit_ship){
+                            this.setState({hit_80: 'failed'});
+                        }else{
+                            this.setState({hit_80: 'cross'});
+                        }
+                        break;
+                    case 81:
+                        if (!hit_ship){
+                            this.setState({hit_81: 'failed'});
+                        }else{
+                            this.setState({hit_81: 'cross'});
+                        }
+                        break;
+                    case 82:
+                        if (!hit_ship){
+                            this.setState({hit_82: 'failed'});
+                        }else{
+                            this.setState({hit_82: 'cross'});
+                        }
+                        break;  
+                    case 83:
+                        if (!hit_ship){
+                            this.setState({hit_83: 'failed'});
+                        }else{
+                            this.setState({hit_83: 'cross'});
+                        }
+                        break;
+                    case 84:
+                        if (!hit_ship){
+                            this.setState({hit_84: 'failed'});
+                        }else{
+                            this.setState({hit_84: 'cross'});
+                        }
+                        break;
+                    case 85:
+                        if (!hit_ship){
+                            this.setState({hit_85: 'failed'});
+                        }else{
+                            this.setState({hit_85: 'cross'});
+                        }
+                        break;
+                    case 86:
+                        if (!hit_ship){
+                            this.setState({hit_86: 'failed'});
+                        }else{
+                            this.setState({hit_86: 'cross'});
+                        }
+                        break;
+                    case 87:
+                        if (!hit_ship){
+                            this.setState({hit_87: 'failed'});
+                        }else{
+                            this.setState({hit_87: 'cross'});
+                        }
+                        break;
+                    case 88:
+                        if (!hit_ship){
+                            this.setState({hit_88: 'failed'});
+                        }else{
+                            this.setState({hit_88: 'cross'});
+                        }
+                        break;
+                    case 89:
+                        if (!hit_ship){
+                            this.setState({hit_89: 'failed'});
+                        }else{
+                            this.setState({hit_89: 'cross'});
+                        }
+                        break;
+
+
+                    case 90:
+                        if (!hit_ship){
+                            this.setState({hit_90: 'failed'});
+                        }else{
+                            this.setState({hit_90: 'cross'});
+                        }
+                        break;
+                    case 91:
+                        if (!hit_ship){
+                            this.setState({hit_91: 'failed'});
+                        }else{
+                            this.setState({hit_91: 'cross'});
+                        }
+                        break;
+                    case 92:
+                        if (!hit_ship){
+                            this.setState({hit_92: 'failed'});
+                        }else{
+                            this.setState({hit_92: 'cross'});
+                        }
+                        break;  
+                    case 93:
+                        if (!hit_ship){
+                            this.setState({hit_93: 'failed'});
+                        }else{
+                            this.setState({hit_93: 'cross'});
+                        }
+                        break;
+                    case 94:
+                        if (!hit_ship){
+                            this.setState({hit_94: 'failed'});
+                        }else{
+                            this.setState({hit_94: 'cross'});
+                        }
+                        break;
+                    case 95:
+                        if (!hit_ship){
+                            this.setState({hit_95: 'failed'});
+                        }else{
+                            this.setState({hit_95: 'cross'});
+                        }
+                        break;
+                    case 96:
+                        if (!hit_ship){
+                            this.setState({hit_96: 'failed'});
+                        }else{
+                            this.setState({hit_96: 'cross'});
+                        }
+                        break;
+                    case 97:
+                        if (!hit_ship){
+                            this.setState({hit_97: 'failed'});
+                        }else{
+                            this.setState({hit_97: 'cross'});
+                        }
+                        break;
+                    case 98:
+                        if (!hit_ship){
+                            this.setState({hit_98: 'failed'});
+                        }else{
+                            this.setState({hit_98: 'cross'});
+                        }
+                        break;
+                    case 99:
+                        if (!hit_ship){
+                            this.setState({hit_99: 'failed'});
+                        }else{
+                            this.setState({hit_99: 'cross'});
+                        }
+                        break; 
+                }
             }
         })
     },
 
     attack(square_id) {
-        this.props.channel.push("attack", {user: random_number, square_id: square_id});
+        this.props.channel.push("attack", {user: this.props.user, square_id: square_id, game: this.props.game});
     },        
 
     onSquareClicked(square_id) {

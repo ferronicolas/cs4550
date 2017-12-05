@@ -1,3 +1,5 @@
+# Gotten from class notes
+
 defmodule Battleship.GameAgent do
   use GenServer
 
@@ -25,4 +27,5 @@ defmodule Battleship.GameAgent do
   def handle_call({:put, key, val}, _from, state) do
     {:reply, :ok, Map.put(state, key, val)}
   end
+  
 end

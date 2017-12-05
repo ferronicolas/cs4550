@@ -1,11 +1,12 @@
- <!-- <div style="text-align: center;">
-    <button id: "create_button" class="btn btn-default">Create room</button>
-    <button id: "join_button" class="btn btn-default">Join room</button>
+<div id="create_div" style="text-align: center;">
+    <button id="create_button" class="btn btn-default">Create room</button>
+    <h6 style="display: none;" id="your_join_code_is">Your join code is: </h6><h6 id="join_code_text"></h6>
 </div>
 
-<div style="text-align: center;">
-    <h6>Your join code is: <h6 id="joinCode"></h6></h6>
-</div> -->
+<div id="join_div" style="text-align: center;">
+    <button id="join_button" class="btn btn-default">Join room</button>
+    <input id="join_code_input" type="text" placeholder="Insert a valid code" />
+</div>
 
 <div id='react-container'></div>
 
